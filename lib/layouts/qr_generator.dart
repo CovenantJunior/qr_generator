@@ -40,7 +40,7 @@ class _QRGeneratorState extends State<QRGenerator> {
           case 'url':
           String url = controllers['url']!.text;
           if(!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = "https://${url}";
+            url = "https://$url";
           }
           return url;
           
@@ -58,6 +58,10 @@ class _QRGeneratorState extends State<QRGenerator> {
       File imageFile = File(imagePath);
       await imageFile.writeAsBytes(capture as List<int>);
       await Share.shareXFiles([XFile(imagePath)], text: "QR Code");
+    }
+
+    Widget buildText(context, label) {
+      return const Text('data');
     }
     
     return Scaffold(
