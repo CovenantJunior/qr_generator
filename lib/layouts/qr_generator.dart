@@ -86,7 +86,21 @@ class _QRGeneratorState extends State<QRGenerator> {
         
         case 'url':
           return buildText(controllers['url'], 'URL');
-        default: return const SizedBox();
+        default: return TextField(
+          controller: textEditingController,
+          decoration: InputDecoration(
+            label: const Text('Input text characters'),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)
+            )
+          ),
+
+          onChanged: (e) {
+            setState(() {
+              data = e;
+            });
+          },
+        );
       }
     }
     
@@ -101,11 +115,61 @@ class _QRGeneratorState extends State<QRGenerator> {
           "Generate QR",
           style: GoogleFonts.poppins(
             color: Colors.white,
-            fontWeight: FontWeight.bold
           ),
         ),
       ),
-      body: buildText(textEditingController, 'Hey'),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100)
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                  child: Column(
+                    children: [
+                      SegmentedButton(
+                        segments: const [
+                          ButtonSegment(
+                            value: 'text',
+                            label: Text('Text'),
+                            icon: Icon(
+                              Icons.text_fields_rounded
+                            )
+                          ),
+                          ButtonSegment(
+                            value: 'url',
+                            label: Text('URL'),
+                            icon: Icon(
+                              Icons.link_rounded
+                            )
+                          ),
+                          ButtonSegment(
+                            value: 'contact',
+                            label: Text('Contact'),
+                            icon: Icon(
+                              Icons.contact_page_rounded
+                            )
+                          )
+                        ],
+                        selected: {selectedTyped},
+                        onSelectionChanged:(p0) {
+                          setState(() {
+                            selectedTyped = p0.first;
+                            data = '';
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      )
     );
   }
 }
