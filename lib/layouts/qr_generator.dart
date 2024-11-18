@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -67,7 +68,10 @@ class _QRGeneratorState extends State<QRGenerator> {
         child: TextField(
           controller: textEditingController,
           onChanged: (e) => {
-            data = generatedData()
+            print(e),
+            setState(() {
+              data = generatedData();
+            })
           },
         ),
       );
@@ -86,20 +90,24 @@ class _QRGeneratorState extends State<QRGenerator> {
         
         case 'url':
           return buildText(controllers['url'], 'URL');
-        default: return TextField(
-          controller: textEditingController,
-          decoration: InputDecoration(
-            label: const Text('Input text characters'),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12)
-            )
+        default: return Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: TextField(
+            controller: textEditingController,
+            decoration: InputDecoration(
+              label: const Text('Input text characters'),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12)
+              )
+            ),
+          
+            onChanged: (e) {
+              print(e);
+              setState(() {
+                data = e;
+              });
+            },
           ),
-
-          onChanged: (e) {
-            setState(() {
-              data = e;
-            });
-          },
         );
       }
     }
@@ -122,49 +130,82 @@ class _QRGeneratorState extends State<QRGenerator> {
         child: Center(
           child: Column(
             children: [
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100)
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
-                  child: Column(
-                    children: [
-                      SegmentedButton(
-                        segments: const [
-                          ButtonSegment(
-                            value: 'text',
-                            label: Text('Text'),
-                            icon: Icon(
-                              Icons.text_fields_rounded
-                            )
-                          ),
-                          ButtonSegment(
-                            value: 'url',
-                            label: Text('URL'),
-                            icon: Icon(
-                              Icons.link_rounded
-                            )
-                          ),
-                          ButtonSegment(
-                            value: 'contact',
-                            label: Text('Contact'),
-                            icon: Icon(
-                              Icons.contact_page_rounded
-                            )
-                          )
-                        ],
-                        selected: {selectedTyped},
-                        onSelectionChanged:(p0) {
-                          setState(() {
-                            selectedTyped = p0.first;
-                            data = '';
-                          });
-                        },
-                      )
-                    ],
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 5.0),
+                    child: Column(
+                      children: [
+                        SegmentedButton<String>(
+                          showSelectedIcon: true,
+                          segments: const [
+                            ButtonSegment(
+                              value: 'text',
+                              label: Text('Text'),
+                              icon: Icon(
+                                Icons.text_fields_rounded
+                              )
+                            ),
+                            ButtonSegment(
+                              value: 'url',
+                              label: Text('URL'),
+                              icon: Icon(
+                                Icons.link_rounded
+                              )
+                            ),
+                            ButtonSegment(
+                              value: 'contact',
+                              label: Text('Contact'),
+                              icon: Icon(
+                                Icons.contact_page_rounded
+                              )
+                            ),
+                          ],
+                          selected: {selectedTyped},
+                          onSelectionChanged:(Set<String> selected) {
+                            print('selected');
+                            setState(() {
+                              selectedTyped = selected.first;
+                              data = '';
+                            });
+                          },
+                        ),
+                        inputFields(),
+                      ],
+                    ),
                   ),
                 ),
+              ),
+              const SizedBox(height: 20),
+              if (data.isNotEmpty)
+              Column(
+                children: [
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)
+                    ),
+                    child: Column(
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          child: Screenshot(
+                            controller: screenshotController!,
+                            child: QrImageView(
+                              data: data,
+                              version: QrVersions.auto,
+                              size: 250,
+                              errorCorrectionLevel: QrErrorCorrectLevel.H,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               )
             ],
           ),
