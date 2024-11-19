@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_generator/layouts/qr_generator.dart';
 import 'package:qr_generator/layouts/qr_scan.dart';
 
@@ -11,6 +13,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  Future<void> requestPermissions() async {
+    // Request the necessary permissions
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.camera,
+      // Add other permissions you need here
+    ].request();
+
+    // Check if all permissions are granted
+    if (statuses.containsValue(PermissionStatus.denied)) {
+      Fluttertoast.showToast(
+        msg: "App may malfunctoin without granted permissions",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.white,
+        textColor: Colors.indigo
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    requestPermissions();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

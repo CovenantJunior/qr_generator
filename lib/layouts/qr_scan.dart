@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class QRScan extends StatefulWidget {
   const QRScan({super.key});
@@ -10,6 +11,20 @@ class QRScan extends StatefulWidget {
 class _QRScanState extends State<QRScan> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      backgroundColor: Colors.indigo,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        centerTitle: true,
+        title: Text(
+          "Scan QR Code",
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
   }
 }
