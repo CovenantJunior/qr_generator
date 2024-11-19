@@ -17,7 +17,7 @@ class QRGenerator extends StatefulWidget {
 String data = "";
 String selectedTyped = "text";
 TextEditingController? textEditingController;
-ScreenshotController? screenshotController;
+ScreenshotController screenshotController = ScreenshotController();
 final Map<String, TextEditingController> controllers = {
   "name" : TextEditingController(),
   "phone": TextEditingController(),
