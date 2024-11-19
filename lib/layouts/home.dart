@@ -16,66 +16,71 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.purple,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'QR Generator',
-                  style: GoogleFonts.poppins(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 32
-                  ),
+        child: Column(
+          children: [
+            Center(
+              child: Text(
+                'QR Generator',
+                style: GoogleFonts.poppins(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 32
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(40),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: const [
-                        BoxShadow(
-                          // blurRadius: 5,
-                          spreadRadius: 5,
-                          color: Colors.white
-                        )
-                      ]
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buttonBuilder(
-                          context,
-                          "Generate QR Code",
-                          Icons.qr_code_rounded,
-                          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRGenerator())
-                          )
-                        ),
-          
-                        const SizedBox(
-                          height: 40,
-                        ),
-          
-                         _buttonBuilder(
-                          context,
-                          "Scan QR Code",
-                          Icons.qr_code_scanner_rounded,
-                          () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRScan())
-                          )
-                        )
-                      ],
-                    ),
-                  ),
-                )
-              ],
+              ),
             ),
-          ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(40),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: const [
+                          BoxShadow(
+                            // blurRadius: 5,
+                            spreadRadius: 5,
+                            color: Colors.white
+                          )
+                        ]
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buttonBuilder(
+                            context,
+                            "Generate QR Code",
+                            Icons.qr_code_rounded,
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRGenerator())
+                            )
+                          ),
+            
+                          const SizedBox(
+                            height: 40,
+                          ),
+            
+                           _buttonBuilder(
+                            context,
+                            "Scan QR Code",
+                            Icons.qr_code_scanner_rounded,
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRScan())
+                            )
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

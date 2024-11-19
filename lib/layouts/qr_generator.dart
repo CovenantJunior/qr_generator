@@ -14,19 +14,19 @@ class QRGenerator extends StatefulWidget {
   State<QRGenerator> createState() => _QRGeneratorState();
 }
 
+String data = "";
+String selectedTyped = "text";
+TextEditingController? textEditingController;
+ScreenshotController? screenshotController;
+final Map<String, TextEditingController> controllers = {
+  "name" : TextEditingController(),
+  "phone": TextEditingController(),
+  "email" : TextEditingController(),
+  "url" : TextEditingController()
+};
 class _QRGeneratorState extends State<QRGenerator> {
   @override
   Widget build(BuildContext context) {
-    TextEditingController? textEditingController;
-    ScreenshotController? screenshotController;
-    String data = "";
-    String selectedTyped = "Text";
-    final Map<String, TextEditingController> controllers = {
-      "name" : TextEditingController(),
-      "phone": TextEditingController(),
-      "email" : TextEditingController(),
-      "url" : TextEditingController()
-    };
 
     String generatedData() {
       switch (selectedTyped) {
@@ -77,7 +77,7 @@ class _QRGeneratorState extends State<QRGenerator> {
       );
     }
 
-    Widget inputFields() {
+    Widget inputFields(selectedTyped) {
       switch (selectedTyped) {
         case 'contact':
           return Column(
@@ -141,9 +141,9 @@ class _QRGeneratorState extends State<QRGenerator> {
                     child: Column(
                       children: [
                         SegmentedButton<String>(
-                          showSelectedIcon: true,
                           segments: const [
                             ButtonSegment(
+                              enabled: true,
                               value: 'text',
                               label: Text('Text'),
                               icon: Icon(
@@ -167,14 +167,14 @@ class _QRGeneratorState extends State<QRGenerator> {
                           ],
                           selected: {selectedTyped},
                           onSelectionChanged:(Set<String> selected) {
-                            print('selected');
                             setState(() {
                               selectedTyped = selected.first;
                               data = '';
                             });
+                            print(selectedTyped);
                           },
                         ),
-                        inputFields(),
+                        inputFields(selectedTyped),
                       ],
                     ),
                   ),
