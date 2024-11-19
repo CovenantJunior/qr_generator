@@ -55,7 +55,7 @@ class _QRGeneratorState extends State<QRGenerator> {
     void shareQR() async {
       final directory = await getApplicationDocumentsDirectory();
       final imagePath = "${directory.path}/qr.png";
-      final capture = screenshotController!.capture();
+      final capture = await screenshotController.capture();
 
       File imageFile = File(imagePath);
       await imageFile.writeAsBytes(capture as List<int>);
@@ -67,8 +67,13 @@ class _QRGeneratorState extends State<QRGenerator> {
         padding: const EdgeInsets.all(16.0),
         child: TextField(
           controller: textEditingController,
+          decoration: InputDecoration(
+            label: Text(label),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12)
+            )
+          ),
           onChanged: (e) => {
-            print(e),
             setState(() {
               data = generatedData();
             })
@@ -102,7 +107,6 @@ class _QRGeneratorState extends State<QRGenerator> {
             ),
           
             onChanged: (e) {
-              print(e);
               setState(() {
                 data = e;
               });
@@ -171,7 +175,6 @@ class _QRGeneratorState extends State<QRGenerator> {
                               selectedTyped = selected.first;
                               data = '';
                             });
-                            print(selectedTyped);
                           },
                         ),
                         inputFields(selectedTyped),
@@ -180,7 +183,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
               if (data.isNotEmpty)
               Column(
                 children: [
@@ -190,14 +193,14 @@ class _QRGeneratorState extends State<QRGenerator> {
                     ),
                     child: Column(
                       children: [
-                        Container(
-                          color: Colors.white,
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
                           child: Screenshot(
-                            controller: screenshotController!,
+                            controller: screenshotController,
                             child: QrImageView(
                               data: data,
                               version: QrVersions.auto,
-                              size: 250,
+                              size: 200,
                               errorCorrectionLevel: QrErrorCorrectLevel.H,
                             ),
                           ),
@@ -206,6 +209,13 @@ class _QRGeneratorState extends State<QRGenerator> {
                     ),
                   )
                 ],
+              ),
+              const SizedBox(height: 15),
+              if (data.isNotEmpty)
+              ElevatedButton.icon(
+                onPressed: () => shareQR(),
+                label: const Text('Share Code'),
+                icon: const Icon(Icons.share),
               )
             ],
           ),
