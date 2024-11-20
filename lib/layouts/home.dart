@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:qr_generator/layouts/drawer.dart';
 import 'package:qr_generator/layouts/qr_generator.dart';
 import 'package:qr_generator/layouts/qr_scan.dart';
 
@@ -43,6 +44,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
+      drawer: const QRDrawer(),
       backgroundColor: Colors.purple,
       body: SafeArea(
         child: Column(

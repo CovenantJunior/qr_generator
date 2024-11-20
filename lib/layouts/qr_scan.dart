@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_contacts/flutter_contacts.dart';
+import 'package:flutter_contacts/flutter_contacts.dart' as contacts;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class QRScan extends StatefulWidget {
   const QRScan({super.key});
@@ -16,7 +17,6 @@ class QRScan extends StatefulWidget {
 class _QRScanState extends State<QRScan> {
 
   String type = 'text';
-  Contact contacts = Contact();
   MobileScannerController scannerController = MobileScannerController();
 
   Future<void> requestPermissions() async {
@@ -103,7 +103,7 @@ class _QRScanState extends State<QRScan> {
                         if (type == 'url') 
                         ElevatedButton.icon(
                           onPressed: () {
-                            // openURL(data);
+                            openURL(data);
                           },
                           icon: const Icon(
                             Icons.open_in_browser_rounded
@@ -118,7 +118,7 @@ class _QRScanState extends State<QRScan> {
                         if (type == 'contact') 
                         ElevatedButton.icon(
                           onPressed: () {
-                            // saveContact(data);
+                            saveContact(data);
                           },
                           icon: const Icon(
                             Icons.save_outlined
@@ -144,7 +144,10 @@ class _QRScanState extends State<QRScan> {
                             ),
                             Expanded(
                               child: OutlinedButton.icon(
-                                onPressed: () => scannerController.start,
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  scannerController.start();
+                                },
                                 icon: const Icon(
                                   Icons.qr_code_rounded
                                 ),
@@ -165,6 +168,46 @@ class _QRScanState extends State<QRScan> {
     );
   }
   
+  Future<void> openURL(String data) async {
+    if (await canLaunchUrl(Uri.parse(data))) {
+      launchUrl(Uri.parse(data));
+    }
+  }
+
+  Future<void> saveContact(String data) async {
+    List<String> lines = data.split('\n');
+    String? name, phone, email;
+    for (var line in lines) {
+      if (line.startsWith('FN:')) name = line.substring(3);
+      if (line.startsWith('TEL:')) phone = line.substring(4);
+      if (line.startsWith('EMAIL:')) email = line.substring(5);
+    }
+    
+    final contact = contacts.Contact()
+    ..name.first = name!
+    ..phones = [contacts.Phone(phone ?? '')]
+    ..emails = [contacts.Email(email ?? '')];
+
+    try {
+      await contact.insert();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text( 'Saved!'),
+          backgroundColor: Colors.blue,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Something went wrong!'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -180,8 +223,50 @@ class _QRScanState extends State<QRScan> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          !scannerController.torchEnabled ? IconButton(
+            onPressed: () {
+              setState(() {
+                scannerController.toggleTorch();
+              });
+            },
+            icon: const Icon(
+              Icons.flash_off_rounded
+            )
+          ) : IconButton(
+            onPressed: () {
+              setState(() {
+                scannerController.toggleTorch();
+              });
+            },
+            icon: const Icon(
+              Icons.flash_on_rounded
+            )
+          )
+        ],
       ),
-      body: ElevatedButton(onPressed: () => process('hey'), child: const Icon(Icons.play_arrow_outlined)),
+      body: Stack(
+        alignment: Alignment.center,
+        children: [
+          MobileScanner(
+            controller: scannerController,
+            onDetect: (e) {
+              final code = e.barcodes.first;
+              if (code.rawValue != null) {
+                String? value = code.rawValue;
+                process(value!);
+              }
+            },
+          ),
+
+          const Text(
+            'Align code with frame',
+            style: TextStyle(
+              color: Colors.white
+            ),
+          )
+        ],
+      ),
     );
   }
 }
