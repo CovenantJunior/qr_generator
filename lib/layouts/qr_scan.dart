@@ -280,7 +280,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
           ),
           Center(
             child: LottieBuilder.asset(
-              'animations/scanning.json',
+              'animations/code-scanning.json',
               controller: controller,
               filterQuality: FilterQuality.high,
               onLoaded: (e) {
