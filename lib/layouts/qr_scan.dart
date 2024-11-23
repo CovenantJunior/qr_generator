@@ -52,7 +52,8 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
   }
 
   void process(String data) {
-    // scannerController.stop();
+    scannerController.stop();
+    controller.stop();
 
     if (data.startsWith('BEGIN:VCARD')) {
       setState(() {
@@ -158,6 +159,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                               onPressed: () {
                                 Navigator.pop(context);
                                 scannerController.start();
+                                controller.repeat();
                               },
                               icon: const Icon(
                                 Icons.qr_code_rounded
