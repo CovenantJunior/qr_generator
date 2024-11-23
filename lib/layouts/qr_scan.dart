@@ -73,109 +73,115 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.9,
-        builder: (BuildContext context, ScrollController scrollController) { 
-          return Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
-            ),
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 24),
-                    decoration:  BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(2)
+      builder: (context) => PopScope(
+        onPopInvokedWithResult: (a, b) {
+          scannerController.start();
+          controller.repeat();
+        },
+        child: DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          builder: (BuildContext context, ScrollController scrollController) { 
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      width: 40,
+                      height: 4,
+                      margin: const EdgeInsets.only(bottom: 24),
+                      decoration:  BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(2)
+                      ),
                     ),
                   ),
-                ),
-                const Text(
-                  'Scanned Result:',
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Type: ${type.toUpperCase()}',
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                      children: [
-                        SelectableText(data),
-                        const SizedBox(height: 15),
-                        if (type == 'url') 
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            openURL(data);
-                          },
-                          icon: const Icon(
-                            Icons.open_in_browser_rounded
-                          ),
-                          label: const Text(
-                            "Open URL"
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50)
-                          ),
-                        ),
-                        if (type == 'contact') 
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            saveContact(data);
-                          },
-                          icon: const Icon(
-                            Icons.save_outlined
-                          ),
-                          label: const Text(
-                            "Save Contact"
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50)
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            OutlinedButton.icon(
-                              onPressed: () => Share.share(data),
-                              icon: const Icon(
-                                Icons.share_rounded
-                              ),
-                              label: const Text('Share')
+                  const Text(
+                    'Scanned Result:',
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Type: ${type.toUpperCase()}',
+                  ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: scrollController,
+                      child: Column(
+                        children: [
+                          SelectableText(data),
+                          const SizedBox(height: 15),
+                          if (type == 'url') 
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              openURL(data);
+                            },
+                            icon: const Icon(
+                              Icons.open_in_browser_rounded
                             ),
-                            const SizedBox(
-                              width: 40,
+                            label: const Text(
+                              "Open URL"
                             ),
-                            OutlinedButton.icon(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                scannerController.start();
-                                controller.repeat();
-                              },
-                              icon: const Icon(
-                                Icons.qr_code_rounded
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50)
+                            ),
+                          ),
+                          if (type == 'contact') 
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              saveContact(data);
+                            },
+                            icon: const Icon(
+                              Icons.save_outlined
+                            ),
+                            label: const Text(
+                              "Save Contact"
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size.fromHeight(50)
+                            ),
+                          ),
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: () => Share.share(data),
+                                icon: const Icon(
+                                  Icons.share_rounded
+                                ),
+                                label: const Text('Share')
                               ),
-                              label: const Text('Scan Again')
-                            )
-                          ],
-                        )
-                      ],
-                    ),
+                              const SizedBox(
+                                width: 40,
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                  scannerController.start();
+                                  controller.repeat();
+                                },
+                                icon: const Icon(
+                                  Icons.qr_code_rounded
+                                ),
+                                label: const Text('Scan Again')
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    )
                   )
-                )
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       )
     );
   }
