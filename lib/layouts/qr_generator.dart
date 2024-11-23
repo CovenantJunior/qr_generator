@@ -117,10 +117,10 @@ class _QRGeneratorState extends State<QRGenerator> {
     }
     
     return Scaffold(
-      backgroundColor: Colors.indigo,
+      backgroundColor: Colors.purple,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         centerTitle: true,
         title: Text(

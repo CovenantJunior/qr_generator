@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as contacts;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
@@ -14,10 +15,12 @@ class QRScan extends StatefulWidget {
   State<QRScan> createState() => _QRScanState();
 }
 
-class _QRScanState extends State<QRScan> {
+class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
 
   String type = 'text';
+  bool flashEnabled = false;
   MobileScannerController scannerController = MobileScannerController();
+  late AnimationController controller;
 
   Future<void> requestPermissions() async {
     // Request the necessary permissions
@@ -34,7 +37,7 @@ class _QRScanState extends State<QRScan> {
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.white,
-        textColor: Colors.indigo
+        textColor: Colors.purple
       );
     }
   }
@@ -43,18 +46,25 @@ class _QRScanState extends State<QRScan> {
   void initState() {
     super.initState();
     requestPermissions();
+    controller = AnimationController(
+      vsync: this
+    );
   }
 
   void process(String data) {
-    scannerController.stop();
+    // scannerController.stop();
 
     if (data.startsWith('BEGIN:VCARD')) {
       setState(() {
         type = 'contact';
       });
-    } else if(!data.startsWith('http://') && !data.startsWith('https://')) {
+    } else if(data.startsWith('http://') || data.startsWith('https://')) {
       setState(() {
         type = 'url';
+      });
+    } else {
+      setState(() {
+        type = 'text';
       });
     }
 
@@ -132,27 +142,27 @@ class _QRScanState extends State<QRScan> {
                         ),
                         const SizedBox(height: 15),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () => Share.share(data),
-                                icon: const Icon(
-                                  Icons.share_rounded
-                                ),
-                                label: const Text('Share')
-                              )
+                            OutlinedButton.icon(
+                              onPressed: () => Share.share(data),
+                              icon: const Icon(
+                                Icons.share_rounded
+                              ),
+                              label: const Text('Share')
                             ),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                  scannerController.start();
-                                },
-                                icon: const Icon(
-                                  Icons.qr_code_rounded
-                                ),
-                                label: const Text('Scan Again')
-                              )
+                            const SizedBox(
+                              width: 40,
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                scannerController.start();
+                              },
+                              icon: const Icon(
+                                Icons.qr_code_rounded
+                              ),
+                              label: const Text('Scan Again')
                             )
                           ],
                         )
@@ -211,10 +221,10 @@ class _QRScanState extends State<QRScan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo,
+      backgroundColor: Colors.purple,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         centerTitle: true,
         title: Text(
@@ -224,10 +234,11 @@ class _QRScanState extends State<QRScan> {
           ),
         ),
         actions: [
-          !scannerController.torchEnabled ? IconButton(
+          !flashEnabled ? IconButton(
             onPressed: () {
               setState(() {
                 scannerController.toggleTorch();
+                flashEnabled = !flashEnabled;
               });
             },
             icon: const Icon(
@@ -237,6 +248,7 @@ class _QRScanState extends State<QRScan> {
             onPressed: () {
               setState(() {
                 scannerController.toggleTorch();
+                flashEnabled = !flashEnabled;
               });
             },
             icon: const Icon(
@@ -245,8 +257,8 @@ class _QRScanState extends State<QRScan> {
           )
         ],
       ),
-      body: Stack(
-        alignment: Alignment.center,
+      body: 
+      Stack(
         children: [
           MobileScanner(
             controller: scannerController,
@@ -258,15 +270,20 @@ class _QRScanState extends State<QRScan> {
               }
             },
           ),
-
-          const Text(
-            'Align code with frame',
-            style: TextStyle(
-              color: Colors.white
+          Center(
+            child: LottieBuilder.asset(
+              'animations/scanning.json',
+              controller: controller,
+              filterQuality: FilterQuality.high,
+              onLoaded: (e) {
+                controller
+                  ..duration = const Duration(seconds: 2)
+                  ..repeat();
+              }
             ),
           )
         ],
-      ),
+      )
     );
   }
 }
