@@ -125,7 +125,7 @@ class _QRGeneratorState extends State<QRGenerator> {
         centerTitle: true,
         title: Text(
           "Generate QR Code",
-          style: GoogleFonts.quicksand(
+          style: GoogleFonts.poppins(
             color: Colors.white,
           ),
         ),

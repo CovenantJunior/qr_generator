@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
             Center(
               child: Text(
                 'QR Generator',
-                style: GoogleFonts.quicksand(
+                style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 32
@@ -159,7 +159,7 @@ class _HomeState extends State<Home> {
             const SizedBox(width: 8),
             Text(
               title,
-              style: GoogleFonts.quicksand(
+              style: GoogleFonts.poppins(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold

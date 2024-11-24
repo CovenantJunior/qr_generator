@@ -237,7 +237,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         centerTitle: true,
         title: Text(
           "Scan QR Code",
-          style: GoogleFonts.quicksand(
+          style: GoogleFonts.poppins(
             color: Colors.white,
           ),
         ),
@@ -278,16 +278,19 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
               }
             },
           ),
-          Center(
-            child: LottieBuilder.asset(
-              'animations/code-scanning.json',
-              controller: controller,
-              filterQuality: FilterQuality.high,
-              onLoaded: (e) {
-                controller
-                  ..duration = const Duration(seconds: 2)
-                  ..repeat();
-              }
+          Opacity(
+            opacity: .5,
+            child: Center(
+              child: LottieBuilder.asset(
+                'animations/code-scanning.json',
+                controller: controller,
+                filterQuality: FilterQuality.high,
+                onLoaded: (e) {
+                  controller
+                    ..duration = const Duration(seconds: 2)
+                    ..repeat();
+                }
+              ),
             ),
           )
         ],
