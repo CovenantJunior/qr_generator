@@ -38,7 +38,7 @@ class _OptionTileState extends State<OptionTile> {
               const SizedBox(height: 10),
               Text(
                 widget.title!,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.quicksand(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 16

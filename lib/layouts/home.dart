@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:qr_generator/components/drawer.dart';
+import 'package:qr_generator/layouts/options.dart';
 import 'package:qr_generator/layouts/qr_generator.dart';
 import 'package:qr_generator/layouts/qr_scan.dart';
 
@@ -48,16 +48,9 @@ class _HomeState extends State<Home> {
         elevation: 0,
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const QRDrawer()));
-          },
-          icon: const Icon(
-            Icons.stream_sharp
-            )
-        ),
+        leading: const SizedBox(),
       ),
-      drawer: const QRDrawer(),
+      drawer: const Options(),
       backgroundColor: Colors.purple,
       body: SafeArea(
         child: Column(
@@ -65,7 +58,7 @@ class _HomeState extends State<Home> {
             Center(
               child: Text(
                 'QR Generator',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.quicksand(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 32
@@ -159,7 +152,7 @@ class _HomeState extends State<Home> {
             const SizedBox(width: 8),
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.quicksand(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold

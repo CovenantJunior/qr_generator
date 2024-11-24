@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:qr_generator/components/option_tile.dart';
 
-class QRDrawer extends StatefulWidget {
-  const QRDrawer({super.key});
+class Options extends StatefulWidget {
+  const Options({super.key});
 
   @override
-  State<QRDrawer> createState() => _QRDrawerState();
+  State<Options> createState() => _OptionsState();
 }
 
-class _QRDrawerState extends State<QRDrawer> {
+class _OptionsState extends State<Options> {
 
   beep() {
     return false;
@@ -21,18 +21,6 @@ class _QRDrawerState extends State<QRDrawer> {
       appBar: AppBar(
         leading: const SizedBox(),
         backgroundColor: Colors.purple,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(
-                Icons.close_fullscreen_rounded,
-                color: Colors.white,
-              )
-            ),
-          )
-        ],
       ),
       body: 
         Padding(

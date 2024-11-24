@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qr_generator/layouts/home.dart';
+import 'package:qr_generator/shell.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,14 +16,16 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'QR Generator',
       theme: ThemeData(
-        textTheme: GoogleFonts.poppinsTextTheme(),
+        textTheme: GoogleFonts.quicksandTextTheme(),
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.light,
           seedColor: Colors.deepPurple
         ),
         useMaterial3: true,
       ),
-      home: const Home(),
+      home: const Shell(
+        index: 0
+      ),
     );
   }
 }

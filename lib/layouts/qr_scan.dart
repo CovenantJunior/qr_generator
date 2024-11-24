@@ -237,7 +237,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         centerTitle: true,
         title: Text(
           "Scan QR Code",
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.quicksand(
             color: Colors.white,
           ),
         ),
