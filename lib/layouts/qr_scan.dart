@@ -19,7 +19,10 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
 
   String type = 'text';
   bool flashEnabled = false;
-  MobileScannerController scannerController = MobileScannerController();
+  MobileScannerController scannerController = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+    facing: CameraFacing.back,
+  );
   late AnimationController controller;
 
   Future<void> requestPermissions() async {
