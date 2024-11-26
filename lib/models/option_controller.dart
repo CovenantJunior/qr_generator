@@ -14,3 +14,4 @@ class OptionController extends ChangeNotifier{
       directory: dir.path
     );
   }
+}
