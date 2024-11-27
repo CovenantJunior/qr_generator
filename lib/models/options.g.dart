@@ -27,20 +27,22 @@ const OptionsSchema = CollectionSchema(
       name: r'copyToClipboard',
       type: IsarType.bool,
     ),
-    r'darkMoode': PropertySchema(
+    r'darkMode': PropertySchema(
       id: 2,
-      name: r'darkMoode',
+      name: r'darkMode',
       type: IsarType.bool,
     ),
     r'detectionSpeed': PropertySchema(
       id: 3,
       name: r'detectionSpeed',
-      type: IsarType.string,
+      type: IsarType.byte,
+      enumMap: _OptionsdetectionSpeedEnumValueMap,
     ),
     r'facing': PropertySchema(
       id: 4,
       name: r'facing',
-      type: IsarType.string,
+      type: IsarType.byte,
+      enumMap: _OptionsfacingEnumValueMap,
     ),
     r'flash': PropertySchema(
       id: 5,
@@ -83,18 +85,6 @@ int _optionsEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.detectionSpeed;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
-  {
-    final value = object.facing;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   return bytesCount;
 }
 
@@ -106,9 +96,9 @@ void _optionsSerialize(
 ) {
   writer.writeBool(offsets[0], object.beep);
   writer.writeBool(offsets[1], object.copyToClipboard);
-  writer.writeBool(offsets[2], object.darkMoode);
-  writer.writeString(offsets[3], object.detectionSpeed);
-  writer.writeString(offsets[4], object.facing);
+  writer.writeBool(offsets[2], object.darkMode);
+  writer.writeByte(offsets[3], object.detectionSpeed.index);
+  writer.writeByte(offsets[4], object.facing.index);
   writer.writeBool(offsets[5], object.flash);
   writer.writeLong(offsets[6], object.qrSize);
   writer.writeBool(offsets[7], object.qrTransparent);
@@ -124,9 +114,13 @@ Options _optionsDeserialize(
   final object = Options();
   object.beep = reader.readBoolOrNull(offsets[0]);
   object.copyToClipboard = reader.readBoolOrNull(offsets[1]);
-  object.darkMoode = reader.readBoolOrNull(offsets[2]);
-  object.detectionSpeed = reader.readStringOrNull(offsets[3]);
-  object.facing = reader.readStringOrNull(offsets[4]);
+  object.darkMode = reader.readBoolOrNull(offsets[2]);
+  object.detectionSpeed =
+      _OptionsdetectionSpeedValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+          DetectionSpeed.noDuplicates;
+  object.facing =
+      _OptionsfacingValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+          CameraFacing.front;
   object.flash = reader.readBoolOrNull(offsets[5]);
   object.id = id;
   object.qrSize = reader.readLongOrNull(offsets[6]);
@@ -149,9 +143,12 @@ P _optionsDeserializeProp<P>(
     case 2:
       return (reader.readBoolOrNull(offset)) as P;
     case 3:
-      return (reader.readStringOrNull(offset)) as P;
+      return (_OptionsdetectionSpeedValueEnumMap[
+              reader.readByteOrNull(offset)] ??
+          DetectionSpeed.noDuplicates) as P;
     case 4:
-      return (reader.readStringOrNull(offset)) as P;
+      return (_OptionsfacingValueEnumMap[reader.readByteOrNull(offset)] ??
+          CameraFacing.front) as P;
     case 5:
       return (reader.readBoolOrNull(offset)) as P;
     case 6:
@@ -164,6 +161,25 @@ P _optionsDeserializeProp<P>(
       throw IsarError('Unknown property with id $propertyId');
   }
 }
+
+const _OptionsdetectionSpeedEnumValueMap = {
+  'noDuplicates': 0,
+  'normal': 1,
+  'unrestricted': 2,
+};
+const _OptionsdetectionSpeedValueEnumMap = {
+  0: DetectionSpeed.noDuplicates,
+  1: DetectionSpeed.normal,
+  2: DetectionSpeed.unrestricted,
+};
+const _OptionsfacingEnumValueMap = {
+  'front': 0,
+  'back': 1,
+};
+const _OptionsfacingValueEnumMap = {
+  0: CameraFacing.front,
+  1: CameraFacing.back,
+};
 
 Id _optionsGetId(Options object) {
   return object.id;
@@ -308,99 +324,74 @@ extension OptionsQueryFilter
     });
   }
 
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkMoodeIsNull() {
+  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'darkMoode',
+        property: r'darkMode',
       ));
     });
   }
 
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkMoodeIsNotNull() {
+  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeIsNotNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'darkMoode',
+        property: r'darkMode',
       ));
     });
   }
 
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkMoodeEqualTo(
+  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeEqualTo(
       bool? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'darkMoode',
+        property: r'darkMode',
         value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'detectionSpeed',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition>
-      detectionSpeedIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'detectionSpeed',
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+      DetectionSpeed value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'detectionSpeed',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition>
       detectionSpeedGreaterThan(
-    String? value, {
+    DetectionSpeed value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'detectionSpeed',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedLessThan(
-    String? value, {
+    DetectionSpeed value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'detectionSpeed',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedBetween(
-    String? lower,
-    String? upper, {
+    DetectionSpeed lower,
+    DetectionSpeed upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -409,147 +400,51 @@ extension OptionsQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition>
-      detectionSpeedStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'detectionSpeed',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'detectionSpeed',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'detectionSpeed',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> detectionSpeedMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'detectionSpeed',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition>
-      detectionSpeedIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'detectionSpeed',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition>
-      detectionSpeedIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'detectionSpeed',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'facing',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'facing',
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> facingEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
+      CameraFacing value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'facing',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> facingGreaterThan(
-    String? value, {
+    CameraFacing value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'facing',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> facingLessThan(
-    String? value, {
+    CameraFacing value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'facing',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<Options, Options, QAfterFilterCondition> facingBetween(
-    String? lower,
-    String? upper, {
+    CameraFacing lower,
+    CameraFacing upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -558,75 +453,6 @@ extension OptionsQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'facing',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'facing',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'facing',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'facing',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'facing',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> facingIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'facing',
-        value: '',
       ));
     });
   }
@@ -863,15 +689,15 @@ extension OptionsQuerySortBy on QueryBuilder<Options, Options, QSortBy> {
     });
   }
 
-  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkMoode() {
+  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkMode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMoode', Sort.asc);
+      return query.addSortBy(r'darkMode', Sort.asc);
     });
   }
 
-  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkMoodeDesc() {
+  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkModeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMoode', Sort.desc);
+      return query.addSortBy(r'darkMode', Sort.desc);
     });
   }
 
@@ -974,15 +800,15 @@ extension OptionsQuerySortThenBy
     });
   }
 
-  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkMoode() {
+  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkMode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMoode', Sort.asc);
+      return query.addSortBy(r'darkMode', Sort.asc);
     });
   }
 
-  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkMoodeDesc() {
+  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkModeDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMoode', Sort.desc);
+      return query.addSortBy(r'darkMode', Sort.desc);
     });
   }
 
@@ -1085,24 +911,21 @@ extension OptionsQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Options, Options, QDistinct> distinctByDarkMoode() {
+  QueryBuilder<Options, Options, QDistinct> distinctByDarkMode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'darkMoode');
+      return query.addDistinctBy(r'darkMode');
     });
   }
 
-  QueryBuilder<Options, Options, QDistinct> distinctByDetectionSpeed(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Options, Options, QDistinct> distinctByDetectionSpeed() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'detectionSpeed',
-          caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'detectionSpeed');
     });
   }
 
-  QueryBuilder<Options, Options, QDistinct> distinctByFacing(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Options, Options, QDistinct> distinctByFacing() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'facing', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'facing');
     });
   }
 
@@ -1151,19 +974,20 @@ extension OptionsQueryProperty
     });
   }
 
-  QueryBuilder<Options, bool?, QQueryOperations> darkMoodeProperty() {
+  QueryBuilder<Options, bool?, QQueryOperations> darkModeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'darkMoode');
+      return query.addPropertyName(r'darkMode');
     });
   }
 
-  QueryBuilder<Options, String?, QQueryOperations> detectionSpeedProperty() {
+  QueryBuilder<Options, DetectionSpeed, QQueryOperations>
+      detectionSpeedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'detectionSpeed');
     });
   }
 
-  QueryBuilder<Options, String?, QQueryOperations> facingProperty() {
+  QueryBuilder<Options, CameraFacing, QQueryOperations> facingProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'facing');
     });
