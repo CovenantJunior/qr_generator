@@ -36,4 +36,6 @@ class OptionController extends ChangeNotifier{
     options = isar.options.where().findAllSync();
     notifyListeners();
   }
+
+  
 }

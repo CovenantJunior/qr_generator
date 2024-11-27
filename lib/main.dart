@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_generator/models/option_controller.dart';
 import 'package:qr_generator/shell.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => OptionController()
+        )
+      ],
+      child: const MyApp()
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
