@@ -18,7 +18,7 @@ class OptionController extends ChangeNotifier{
 
   List<Options> options = [];
 
-  void initPreference() async {
+  void initOptions() async {
     List currentOptions = isar.options.where().findAllSync();
     if (currentOptions.isEmpty) {
       final newPreference = Options()
@@ -32,10 +32,8 @@ class OptionController extends ChangeNotifier{
         ..qrSize = 200
         ..qrTransparent = true;
       await isar.writeTxn(() => isar.options.put(newPreference));
-      options = isar.options.where().findAllSync();
-      notifyListeners();
-    } else {
-      initPreference();
     }
+    options = isar.options.where().findAllSync();
+    notifyListeners();
   }
 }
