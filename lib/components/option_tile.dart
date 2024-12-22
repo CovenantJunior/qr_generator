@@ -25,7 +25,7 @@ class _OptionTileState extends State<OptionTile> {
       onTap: () => widget.fn,
       child: Card(
         elevation: 10,
-        color: widget.enabled ?const Color.fromARGB(255, 43, 0, 50) : const Color.fromARGB(255, 15, 0, 15),
+        color: !widget.enabled ?const Color.fromARGB(255, 43, 0, 50) : const Color.fromARGB(255, 15, 0, 15),
         child: SizedBox(
           height: 100,
           width: 100,
@@ -33,16 +33,17 @@ class _OptionTileState extends State<OptionTile> {
             children: [
               Icon(
                 widget.icon,
-                color: widget.enabled ? Colors. grey : Colors.white,
+                color: !widget.enabled ? Colors. grey : Colors.white,
                 size: 30,
               ),
               const SizedBox(height: 10),
               Text(
                 widget.title!,
+                textAlign: TextAlign.center,
                 style: GoogleFonts.quicksand(
-                  color: widget.enabled ? Colors.grey : Colors.white,
+                  color: !widget.enabled ? Colors.grey : Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 16
+                  fontSize: 12
                 ),
               ),
             ],

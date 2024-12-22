@@ -22,7 +22,6 @@ class OptionController extends ChangeNotifier{
     List currentOptions = isar.options.where().findAllSync();
     if (currentOptions.isEmpty) {
       final newPreference = Options()
-        ..theme = 1
         ..beep = true
         ..vibrate = true
         ..copyToClipboard = false
@@ -30,7 +29,8 @@ class OptionController extends ChangeNotifier{
         ..facing = CameraFacing.back
         ..flash = false
         ..qrSize = 200
-        ..qrTransparent = true;
+        ..qrTransparent = true
+        ..theme = 1;
       await isar.writeTxn(() => isar.options.put(newPreference));
     }
     options = isar.options.where().findAllSync();

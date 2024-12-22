@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qr_generator/models/option_controller.dart';
+import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:qr_generator/shell.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await OptionController.initialize();
   runApp(
     MultiProvider(
       providers: [
@@ -24,9 +25,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    context.read<OptionController>().initOptions();
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'QR Generator',
       theme: ThemeData(
         textTheme: GoogleFonts.quicksandTextTheme(),
         colorScheme: ColorScheme.fromSeed(
