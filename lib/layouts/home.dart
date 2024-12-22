@@ -7,7 +7,14 @@ import 'package:qr_generator/layouts/qr_generator.dart';
 import 'package:qr_generator/layouts/qr_scan.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  List<Color>? colors;
+  Color? textColor;
+  
+  Home({
+    super.key,
+    required this.colors,
+    required this.textColor
+  });
 
   @override
   State<Home> createState() => _HomeState();
@@ -29,8 +36,8 @@ class _HomeState extends State<Home> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: const Color.fromARGB(255, 43, 0, 50)
+        backgroundColor: widget.textColor,
+        textColor: widget.colors![0]
       );
     }
   }
@@ -46,12 +53,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 43, 0, 50),
-        foregroundColor: Colors.white,
+        backgroundColor: widget.colors![0],
+        foregroundColor: widget.textColor,
         leading: const SizedBox(),
       ),
-      drawer: const Options(),
-      backgroundColor: const Color.fromARGB(255, 43, 0, 50),
+      drawer: Options(colors: widget.colors, textColor: widget.textColor),
+      backgroundColor: widget.colors![0],
       body: SafeArea(
         child: Column(
           children: [
@@ -59,7 +66,7 @@ class _HomeState extends State<Home> {
               child: Text(
                 'QR Generator',
                 style: GoogleFonts.quicksand(
-                  color: Colors.white,
+                  color: widget.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 32
                 ),
@@ -80,11 +87,11 @@ class _HomeState extends State<Home> {
                       padding: const EdgeInsets.all(40),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
                             // blurRadius: 5,
                             spreadRadius: 5,
-                            color: Colors.white
+                            color: widget.textColor!
                           )
                         ]
                       ),
@@ -95,7 +102,7 @@ class _HomeState extends State<Home> {
                             context,
                             "Generate QR Code",
                             Icons.qr_code_rounded,
-                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRGenerator())
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => QRGenerator(colors: widget.colors, textColor: widget.textColor))
                             )
                           ),
             
@@ -107,7 +114,7 @@ class _HomeState extends State<Home> {
                             context,
                             "Scan QR Code",
                             Icons.qr_code_scanner_rounded,
-                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => const QRScan())
+                            () => Navigator.push(context, MaterialPageRoute(builder: (context) => QRScan(colors: widget.colors, textColor: widget.textColor))
                             )
                           )
                         ],
@@ -138,7 +145,7 @@ class _HomeState extends State<Home> {
         height: 200,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 43, 0, 50),
+          color: widget.colors![0],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -146,14 +153,14 @@ class _HomeState extends State<Home> {
           children: [
             Icon(
               icon,
-              color: Colors.white,
+              color: widget.textColor,
               size: 90,
             ),
             const SizedBox(width: 8),
             Text(
               title,
               style: GoogleFonts.quicksand(
-                color: Colors.white,
+                color: widget.textColor,
                 fontSize: 20,
                 fontWeight: FontWeight.bold
               ),

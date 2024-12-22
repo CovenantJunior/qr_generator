@@ -6,12 +6,17 @@ class OptionTile extends StatefulWidget {
   void fn;
   IconData icon;
   bool enabled;
+  List<Color>? colors;
+  Color? textColor;
+
   OptionTile({
     super.key,
     required this.title,
     required this.fn,
     required this.icon,
-    required this.enabled
+    required this.enabled,
+    required this.colors,
+    required this.textColor
   });
 
   @override
@@ -25,7 +30,7 @@ class _OptionTileState extends State<OptionTile> {
       onTap: () => widget.fn,
       child: Card(
         elevation: 10,
-        color: !widget.enabled ?const Color.fromARGB(255, 43, 0, 50) : const Color.fromARGB(255, 15, 0, 15),
+        color: !widget.enabled ? widget.colors![1] : widget.colors![0],
         child: SizedBox(
           height: 100,
           width: 100,
@@ -33,7 +38,7 @@ class _OptionTileState extends State<OptionTile> {
             children: [
               Icon(
                 widget.icon,
-                color: !widget.enabled ? Colors. grey : Colors.white,
+                color: !widget.enabled ? widget.colors![0] : widget.textColor,
                 size: 30,
               ),
               const SizedBox(height: 10),
@@ -41,7 +46,7 @@ class _OptionTileState extends State<OptionTile> {
                 widget.title!,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.quicksand(
-                  color: !widget.enabled ? Colors.grey : Colors.white,
+                  color: !widget.enabled ? widget.colors![0] : widget.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12
                 ),

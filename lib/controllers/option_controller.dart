@@ -37,5 +37,42 @@ class OptionController extends ChangeNotifier{
     notifyListeners();
   }
 
-  
+  void fetchOptions() async {
+    List<Options> currentOptions = isar.options.where().findAllSync();
+    if (currentOptions.isEmpty) {
+      initOptions();
+    } else {
+      options.clear();
+      options.addAll(currentOptions);
+      notifyListeners();
+    }
+  }
+
+  void updateTheme(id) async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.theme == id) {
+        
+      } else {
+        initOptions.theme = id;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.theme = initOptions.theme;
+    }
+    fetchOptions();
+  }
+
+  setVibrations(dynamic isar) async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.vibrate == true) {
+        initOptions.vibrate = false;
+      } else {
+        initOptions.vibrate = true;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.vibrate = initOptions.vibrate;
+    }
+    fetchOptions();
+  }
 }

@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:qr_generator/controllers/option_controller.dart';
 
 class ThemeOptionTile extends StatefulWidget {
+  int? id;
   String? title;
-  void fn;
   IconData icon;
   bool enabled;
   List<Color> color;
+  Color? textColor;
   ThemeOptionTile({
     super.key,
+    required  this.id,
     required this.title,
-    required this.fn,
     required this.icon,
     required this.enabled,
-    required this.color
+    required this.color,
+    required this.textColor
   });
 
   @override
@@ -20,14 +25,17 @@ class ThemeOptionTile extends StatefulWidget {
 }
 
 class _ThemeOptionTileState extends State<ThemeOptionTile> {
+  toggleTheme(id) {
+    context.read<OptionController>().updateTheme(id);
+  }
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => widget.fn,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Card(
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        GestureDetector(
+          onTap: () => toggleTheme(widget.id),
+          child: Card(
             elevation: 10,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20.0),
@@ -48,15 +56,27 @@ class _ThemeOptionTileState extends State<ThemeOptionTile> {
               ),
             ),
           ),
-          if (widget.enabled)
-          const Center(
+        ),
+        Text(
+          widget.title!,
+          style: GoogleFonts.quicksand(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: widget.textColor
+          ),
+        ),
+        if (widget.enabled)
+        Padding(
+          padding: const EdgeInsets.only(top: 60),
+          child: Center(
             child: Icon(
               Icons.done_outline_rounded,
-              color: Colors.white,
+              color: widget.textColor,
             ),
-          )
-        ]
-      ),
+          ),
+        )
+        
+      ]
     );
   }
 }

@@ -8,7 +8,14 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QRGenerator extends StatefulWidget {
-  const QRGenerator({super.key});
+  List<Color>? colors;
+  Color? textColor;
+
+  QRGenerator({
+    super.key,
+    required this.colors,
+    required this.textColor
+  });
 
   @override
   State<QRGenerator> createState() => _QRGeneratorState();
@@ -117,16 +124,16 @@ class _QRGeneratorState extends State<QRGenerator> {
     }
     
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 43, 0, 50),
+      backgroundColor: widget.colors![0],
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 43, 0, 50),
-        foregroundColor: Colors.white,
+        backgroundColor: widget.colors![0],
+        foregroundColor: widget.textColor,
         centerTitle: true,
         title: Text(
           "Generate QR Code",
           style: GoogleFonts.quicksand(
-            color: Colors.white,
+            color: widget.textColor,
           ),
         ),
       ),

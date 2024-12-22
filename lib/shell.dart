@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:qr_generator/components/themes.dart';
+import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:qr_generator/layouts/home.dart';
 import 'package:qr_generator/layouts/options.dart';
 class Shell extends StatelessWidget {
@@ -14,35 +17,41 @@ class Shell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   List<Map<String, dynamic>> themes = Themes().themes;
+    int themeID = context.watch<OptionController>().options.first.theme!;
+    Map<String, dynamic> theme = themes.firstWhere((theme) => theme['id'] == themeID);
+    List<Color> colors = theme['color'];
+    Color textColor = theme['textColor'];
+
     final PersistentTabController controller = PersistentTabController(initialIndex: index);
     return PersistentTabView(
       context,
       controller: controller,
-      screens: const [
-        Home(),
-        Options(),
+      screens: [
+        Home(colors: colors, textColor: textColor),
+        Options(colors: colors, textColor: textColor),
       ],
       items: [
         PersistentBottomNavBarItem(
-          activeColorPrimary: Colors.white,
-          icon: const Icon(
+          activeColorPrimary: textColor,
+          icon: Icon(
             Icons.qr_code_rounded,
-            color: Colors.white,
+            color: textColor,
             size: 20,
           ),
           textStyle: GoogleFonts.quicksand(
-            color: Colors.white,
+            color: textColor,
           ),
         ),
         PersistentBottomNavBarItem(
-          activeColorPrimary: Colors.white,
-          icon: const Icon(
+          activeColorPrimary: textColor,
+          icon: Icon(
             Icons.settings_suggest_sharp,
-            color: Colors.white,
+            color: textColor,
             size: 20,
           ),
           textStyle: GoogleFonts.quicksand(
-            color: Colors.white,
+            color: textColor,
           ),
         ),
       ],
@@ -52,7 +61,7 @@ class Shell extends StatelessWidget {
       hideNavigationBarWhenKeyboardAppears: true,
       popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
       padding: const EdgeInsets.only(top: 8),
-      backgroundColor: const Color.fromARGB(255, 15, 0, 15),
+      backgroundColor: colors[1],
       isVisible: true,
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(

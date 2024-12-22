@@ -9,7 +9,14 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class QRScan extends StatefulWidget {
-  const QRScan({super.key});
+  List<Color>? colors;
+  Color? textColor;
+
+  QRScan({
+    super.key,
+    required this.colors,
+    required this.textColor
+  });
 
   @override
   State<QRScan> createState() => _QRScanState();
@@ -39,8 +46,8 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
-        backgroundColor: Colors.white,
-        textColor: const Color.fromARGB(255, 43, 0, 50)
+        backgroundColor: Colors.red,
+        textColor: widget.colors![0]
       );
     }
   }
@@ -232,16 +239,16 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 43, 0, 50),
+      backgroundColor: widget.colors![0],
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 43, 0, 50),
-        foregroundColor: Colors.white,
+        backgroundColor: widget.colors![0],
+        foregroundColor: widget.textColor,
         centerTitle: true,
         title: Text(
           "Scan QR Code",
           style: GoogleFonts.quicksand(
-            color: Colors.white,
+            color: widget.textColor,
           ),
         ),
         actions: [
