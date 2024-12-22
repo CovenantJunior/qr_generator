@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.white,
-        textColor: Colors.purple
+        textColor: const Color.fromARGB(255, 43, 0, 50)
       );
     }
   }
@@ -46,12 +46,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 43, 0, 50),
         foregroundColor: Colors.white,
         leading: const SizedBox(),
       ),
       drawer: const Options(),
-      backgroundColor: Colors.purple,
+      backgroundColor: const Color.fromARGB(255, 43, 0, 50),
       body: SafeArea(
         child: Column(
           children: [
@@ -138,7 +138,7 @@ class _HomeState extends State<Home> {
         height: 200,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.purple,
+          color: const Color.fromARGB(255, 43, 0, 50),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(

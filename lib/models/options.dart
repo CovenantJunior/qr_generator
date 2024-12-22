@@ -7,7 +7,6 @@ part 'options.g.dart';
 @Collection()
 class Options {
   Id id = 1;
-  bool? darkMode;
   bool? beep;
   bool? vibrate;
   bool? copyToClipboard;
@@ -22,4 +21,7 @@ class Options {
   // QR code generation options
   int? qrSize;
   bool? qrTransparent;
+
+  // Theme
+  int? theme;
 }

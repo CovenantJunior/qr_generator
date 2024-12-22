@@ -22,7 +22,7 @@ class OptionController extends ChangeNotifier{
     List currentOptions = isar.options.where().findAllSync();
     if (currentOptions.isEmpty) {
       final newPreference = Options()
-        ..darkMode = false
+        ..theme = 1
         ..beep = true
         ..vibrate = true
         ..copyToClipboard = false

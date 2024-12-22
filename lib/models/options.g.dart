@@ -27,37 +27,37 @@ const OptionsSchema = CollectionSchema(
       name: r'copyToClipboard',
       type: IsarType.bool,
     ),
-    r'darkMode': PropertySchema(
-      id: 2,
-      name: r'darkMode',
-      type: IsarType.bool,
-    ),
     r'detectionSpeed': PropertySchema(
-      id: 3,
+      id: 2,
       name: r'detectionSpeed',
       type: IsarType.byte,
       enumMap: _OptionsdetectionSpeedEnumValueMap,
     ),
     r'facing': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'facing',
       type: IsarType.byte,
       enumMap: _OptionsfacingEnumValueMap,
     ),
     r'flash': PropertySchema(
-      id: 5,
+      id: 4,
       name: r'flash',
       type: IsarType.bool,
     ),
     r'qrSize': PropertySchema(
-      id: 6,
+      id: 5,
       name: r'qrSize',
       type: IsarType.long,
     ),
     r'qrTransparent': PropertySchema(
-      id: 7,
+      id: 6,
       name: r'qrTransparent',
       type: IsarType.bool,
+    ),
+    r'theme': PropertySchema(
+      id: 7,
+      name: r'theme',
+      type: IsarType.long,
     ),
     r'vibrate': PropertySchema(
       id: 8,
@@ -96,12 +96,12 @@ void _optionsSerialize(
 ) {
   writer.writeBool(offsets[0], object.beep);
   writer.writeBool(offsets[1], object.copyToClipboard);
-  writer.writeBool(offsets[2], object.darkMode);
-  writer.writeByte(offsets[3], object.detectionSpeed.index);
-  writer.writeByte(offsets[4], object.facing.index);
-  writer.writeBool(offsets[5], object.flash);
-  writer.writeLong(offsets[6], object.qrSize);
-  writer.writeBool(offsets[7], object.qrTransparent);
+  writer.writeByte(offsets[2], object.detectionSpeed.index);
+  writer.writeByte(offsets[3], object.facing.index);
+  writer.writeBool(offsets[4], object.flash);
+  writer.writeLong(offsets[5], object.qrSize);
+  writer.writeBool(offsets[6], object.qrTransparent);
+  writer.writeLong(offsets[7], object.theme);
   writer.writeBool(offsets[8], object.vibrate);
 }
 
@@ -114,17 +114,17 @@ Options _optionsDeserialize(
   final object = Options();
   object.beep = reader.readBoolOrNull(offsets[0]);
   object.copyToClipboard = reader.readBoolOrNull(offsets[1]);
-  object.darkMode = reader.readBoolOrNull(offsets[2]);
   object.detectionSpeed =
-      _OptionsdetectionSpeedValueEnumMap[reader.readByteOrNull(offsets[3])] ??
+      _OptionsdetectionSpeedValueEnumMap[reader.readByteOrNull(offsets[2])] ??
           DetectionSpeed.noDuplicates;
   object.facing =
-      _OptionsfacingValueEnumMap[reader.readByteOrNull(offsets[4])] ??
+      _OptionsfacingValueEnumMap[reader.readByteOrNull(offsets[3])] ??
           CameraFacing.front;
-  object.flash = reader.readBoolOrNull(offsets[5]);
+  object.flash = reader.readBoolOrNull(offsets[4]);
   object.id = id;
-  object.qrSize = reader.readLongOrNull(offsets[6]);
-  object.qrTransparent = reader.readBoolOrNull(offsets[7]);
+  object.qrSize = reader.readLongOrNull(offsets[5]);
+  object.qrTransparent = reader.readBoolOrNull(offsets[6]);
+  object.theme = reader.readLongOrNull(offsets[7]);
   object.vibrate = reader.readBoolOrNull(offsets[8]);
   return object;
 }
@@ -141,20 +141,20 @@ P _optionsDeserializeProp<P>(
     case 1:
       return (reader.readBoolOrNull(offset)) as P;
     case 2:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 3:
       return (_OptionsdetectionSpeedValueEnumMap[
               reader.readByteOrNull(offset)] ??
           DetectionSpeed.noDuplicates) as P;
-    case 4:
+    case 3:
       return (_OptionsfacingValueEnumMap[reader.readByteOrNull(offset)] ??
           CameraFacing.front) as P;
+    case 4:
+      return (reader.readBoolOrNull(offset)) as P;
     case 5:
-      return (reader.readBoolOrNull(offset)) as P;
-    case 6:
       return (reader.readLongOrNull(offset)) as P;
-    case 7:
+    case 6:
       return (reader.readBoolOrNull(offset)) as P;
+    case 7:
+      return (reader.readLongOrNull(offset)) as P;
     case 8:
       return (reader.readBoolOrNull(offset)) as P;
     default:
@@ -319,32 +319,6 @@ extension OptionsQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'copyToClipboard',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'darkMode',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'darkMode',
-      ));
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterFilterCondition> darkModeEqualTo(
-      bool? value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'darkMode',
         value: value,
       ));
     });
@@ -631,6 +605,75 @@ extension OptionsQueryFilter
     });
   }
 
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'theme',
+      ));
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'theme',
+      ));
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeEqualTo(
+      int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'theme',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'theme',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'theme',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterFilterCondition> themeBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'theme',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<Options, Options, QAfterFilterCondition> vibrateIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -686,18 +729,6 @@ extension OptionsQuerySortBy on QueryBuilder<Options, Options, QSortBy> {
   QueryBuilder<Options, Options, QAfterSortBy> sortByCopyToClipboardDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'copyToClipboard', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkMode() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMode', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterSortBy> sortByDarkModeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMode', Sort.desc);
     });
   }
 
@@ -761,6 +792,18 @@ extension OptionsQuerySortBy on QueryBuilder<Options, Options, QSortBy> {
     });
   }
 
+  QueryBuilder<Options, Options, QAfterSortBy> sortByTheme() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'theme', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterSortBy> sortByThemeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'theme', Sort.desc);
+    });
+  }
+
   QueryBuilder<Options, Options, QAfterSortBy> sortByVibrate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'vibrate', Sort.asc);
@@ -797,18 +840,6 @@ extension OptionsQuerySortThenBy
   QueryBuilder<Options, Options, QAfterSortBy> thenByCopyToClipboardDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'copyToClipboard', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkMode() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMode', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Options, Options, QAfterSortBy> thenByDarkModeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'darkMode', Sort.desc);
     });
   }
 
@@ -884,6 +915,18 @@ extension OptionsQuerySortThenBy
     });
   }
 
+  QueryBuilder<Options, Options, QAfterSortBy> thenByTheme() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'theme', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Options, Options, QAfterSortBy> thenByThemeDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'theme', Sort.desc);
+    });
+  }
+
   QueryBuilder<Options, Options, QAfterSortBy> thenByVibrate() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'vibrate', Sort.asc);
@@ -908,12 +951,6 @@ extension OptionsQueryWhereDistinct
   QueryBuilder<Options, Options, QDistinct> distinctByCopyToClipboard() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'copyToClipboard');
-    });
-  }
-
-  QueryBuilder<Options, Options, QDistinct> distinctByDarkMode() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'darkMode');
     });
   }
 
@@ -947,6 +984,12 @@ extension OptionsQueryWhereDistinct
     });
   }
 
+  QueryBuilder<Options, Options, QDistinct> distinctByTheme() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'theme');
+    });
+  }
+
   QueryBuilder<Options, Options, QDistinct> distinctByVibrate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'vibrate');
@@ -971,12 +1014,6 @@ extension OptionsQueryProperty
   QueryBuilder<Options, bool?, QQueryOperations> copyToClipboardProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'copyToClipboard');
-    });
-  }
-
-  QueryBuilder<Options, bool?, QQueryOperations> darkModeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'darkMode');
     });
   }
 
@@ -1008,6 +1045,12 @@ extension OptionsQueryProperty
   QueryBuilder<Options, bool?, QQueryOperations> qrTransparentProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'qrTransparent');
+    });
+  }
+
+  QueryBuilder<Options, int?, QQueryOperations> themeProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'theme');
     });
   }
 

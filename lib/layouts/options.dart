@@ -17,10 +17,10 @@ class _OptionsState extends State<Options> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purple,
+      backgroundColor: const Color.fromARGB(255, 43, 0, 50),
       appBar: AppBar(
         leading: const SizedBox(),
-        backgroundColor: Colors.purple,
+        backgroundColor: const Color.fromARGB(255, 43, 0, 50),
       ),
       body: 
         Padding(

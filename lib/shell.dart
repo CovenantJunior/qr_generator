@@ -52,7 +52,7 @@ class Shell extends StatelessWidget {
       hideNavigationBarWhenKeyboardAppears: true,
       popBehaviorOnSelectedNavBarItemPress: PopBehavior.all,
       padding: const EdgeInsets.only(top: 8),
-      backgroundColor: Colors.purple[700]!,
+      backgroundColor: const Color.fromARGB(255, 15, 0, 15),
       isVisible: true,
       animationSettings: const NavBarAnimationSettings(
         navBarItemAnimation: ItemAnimationSettings(
