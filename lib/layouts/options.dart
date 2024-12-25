@@ -173,9 +173,11 @@ class _OptionsState extends State<Options> {
               size: 40,
             ),
             const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 0.0),
-              child: Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 0.0),
+              child: Divider(
+                color: widget.textColor,
+              ),
             ),
             const SizedBox(height: 40),
             SizedBox(
