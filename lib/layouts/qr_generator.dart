@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -207,7 +209,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                             child: QrImageView(
                               data: data,
                               version: QrVersions.auto,
-                              size: 200,
+                              size: context.read<OptionController>().options.first.qrSize!.toDouble(),
                               errorCorrectionLevel: QrErrorCorrectLevel.H,
                             ),
                           ),

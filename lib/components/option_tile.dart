@@ -26,6 +26,50 @@ class OptionTile extends StatefulWidget {
 }
 
 class _OptionTileState extends State<OptionTile> {
+  int? _selectedSize;
+
+  List<DropdownMenuItem<int>> getDropdownItems() {
+    List<DropdownMenuItem<int>> items = [];
+    items.add(const DropdownMenuItem(value: 100, child: Text('100x100')));
+    items.add(const DropdownMenuItem(value: 200, child: Text('200x200')));
+    items.add(const DropdownMenuItem(value: 300, child: Text('300x300')));
+    return items;
+  }
+
+  void selectSize() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          "Select Size",
+          textAlign: TextAlign.center,
+          style: GoogleFonts.quicksand(
+            color: widget.textColor,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: widget.colors![0],
+        content: DropdownButton(
+          dropdownColor: widget.colors![0],
+          style: GoogleFonts.quicksand(
+            color: widget.textColor,
+            fontWeight: FontWeight.w500,
+          ),
+          iconEnabledColor: widget.textColor,
+          value: context.read<OptionController>().options.first.qrSize,
+          onChanged: (int? newValue) {
+            setState(() {
+              _selectedSize = newValue;
+            });
+            context.read<OptionController>().setQRSize(newValue);
+            Navigator.pop(context);
+          },
+          items: getDropdownItems(),
+        )
+      ),
+    );
+  }
+
   option(id, {int? size}) {
     switch (id) {
       case 1:
@@ -47,7 +91,8 @@ class _OptionTileState extends State<OptionTile> {
         context.read<OptionController>().setFlash();
         break;
       case 7:
-        context.read<OptionController>().setQRSize(size);
+        selectSize();
+        // context.read<OptionController>().setQRSize(size);
         break;
       case 8:
         context.read<OptionController>().setTransparent();

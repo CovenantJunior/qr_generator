@@ -90,7 +90,7 @@ class Themes {
         const Color.fromARGB(255, 0, 255, 255),
         const Color.fromARGB(255, 0, 150, 150),
       ],
-      'textColor': const Color.fromARGB(255, 0, 0, 0),
+      'textColor': const Color.fromARGB(170, 0, 0, 0),
     },
   ];
 }

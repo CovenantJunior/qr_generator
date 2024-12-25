@@ -204,7 +204,7 @@ class _OptionsState extends State<Options> {
                   OptionTile(
                     id: 5,
                     title: "Camera\n'${facing.toString().split('.').last.toUpperCase()}'",
-                    icon: Icons.flip_camera_ios_outlined,
+                    icon: facing == CameraFacing.back ? Icons.flip_camera_ios_outlined : Icons.flip_camera_ios_rounded,
                     enabled: true,
                     colors: widget.colors,
                     textColor: widget.textColor
@@ -234,13 +234,25 @@ class _OptionsState extends State<Options> {
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
-                  OptionTile(
-                    id: 8,
-                    title: "Transparent",
-                    icon: Icons.water_drop_sharp,
-                    enabled: qrTransparent!,
-                    colors: widget.colors,
-                    textColor: widget.textColor
+                  Stack(
+                    children: [
+                      OptionTile(
+                        id: 8,
+                        title: "Transparent",
+                        icon: Icons.water_drop_sharp,
+                        enabled: qrTransparent!,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      Positioned(
+                        right: 0,
+                        child: Icon(
+                          Icons.workspace_premium_outlined,
+                          color: qrTransparent ? widget.textColor : widget.colors![0],
+                          size: 30,
+                        ),
+                      )
+                    ]
                   ),
                   Stack(
                     children: [

@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as contacts;
@@ -6,8 +7,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vibration/vibration.dart';
 
 class QRScan extends StatefulWidget {
   List<Color>? colors;
@@ -23,15 +27,15 @@ class QRScan extends StatefulWidget {
   State<QRScan> createState() => _QRScanState();
 }
 
-class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
+class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
 
   String type = 'text';
-  bool flashEnabled = false;
-  MobileScannerController scannerController = MobileScannerController(
-    detectionSpeed: DetectionSpeed.noDuplicates,
-    facing: CameraFacing.back,
-  );
+  bool? flashEnabled;
+  MobileScannerController? scannerController;
+  
   late AnimationController controller;
+
+  final player = AudioPlayer();
 
   Future<void> requestPermissions() async {
     // Request the necessary permissions
@@ -60,11 +64,45 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
     controller = AnimationController(
       vsync: this
     );
+    flashEnabled = context.watch<OptionController>().options.first.flash!;
+    scannerController = MobileScannerController(
+      detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
+      facing: context.read<OptionController>().options.first.facing,
+    );
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      if (context.read<OptionController>().options.first.flash!) {
+        scannerController!.toggleTorch();
+      }
+    });
+  }
+
+  void copy(data) {
+    Clipboard.setData(ClipboardData(text: data));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Copied!',
+          style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+        ),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void beep() async {
+    await player.play(AssetSource('audios/beep.mp3'));
   }
 
   void process(String data) {
-    scannerController.stop();
+    context.read<OptionController>().options.first.beep!
+    ?
+      beep()
+    : 
+      null;
+    
+    scannerController!.stop();
     controller.stop();
+    context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
 
     if (data.startsWith('BEGIN:VCARD')) {
       setState(() {
@@ -79,31 +117,14 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         type = 'text';
       });
     }
-
-    void copy(data) {
-      Clipboard.setData (
-        ClipboardData(
-          text: data
-          )
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Copied!',
-            style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    }
-
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => PopScope(
         onPopInvokedWithResult: (a, b) {
-          scannerController.start();
+          /* scannerController!.start(); */
           controller.repeat();
         },
         child: DraggableScrollableSheet(
@@ -133,7 +154,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                   Text(
                     'Scanned Result:',
                     style: GoogleFonts.quicksand(
-                      color: widget.colors![0],
+                      color: widget.colors![1],
                       fontWeight: FontWeight.w700
                     ),
                   ),
@@ -141,7 +162,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                   Text(
                     'Type: ${type.toUpperCase()}',
                     style: GoogleFonts.quicksand(
-                      color: widget.colors![0],
+                      color: widget.colors![1],
                       fontWeight: FontWeight.bold
                     )
                   ),
@@ -160,8 +181,9 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 onPressed: () {
                                   openURL(data);
                                 },
-                                icon: const Icon(
-                                  Icons.open_in_browser_rounded
+                                icon: Icon(
+                                  Icons.open_in_browser_rounded,
+                                  color: widget.textColor,
                                 ),
                                 label: Text(
                                   "Open URL",
@@ -172,16 +194,19 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0]
+                                  backgroundColor: widget.colors![0],
                                 ),
                               ),
+                              if (!context.read<OptionController>().options.first.copyToClipboard!)
                               const SizedBox(width: 20),
+                              if (!context.read<OptionController>().options.first.copyToClipboard!)
                               ElevatedButton.icon(
                                 onPressed: () {
                                   copy(data);
                                 },
-                                icon: const Icon(
-                                  Icons.copy_rounded
+                                icon: Icon(
+                                  Icons.copy_rounded,
+                                  color: widget.textColor,
                                 ),
                                 label: Text(
                                   "Copy URL",
@@ -192,7 +217,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0]
+                                  backgroundColor: widget.colors![0],
                                 ),
                               ),
                             ],
@@ -217,10 +242,12 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0]
+                                  backgroundColor: widget.colors![0],
                                 ),
                               ),
+                              if (!context.read<OptionController>().options.first.copyToClipboard!)
                               const SizedBox(width: 20),
+                              if (!context.read<OptionController>().options.first.copyToClipboard!)
                               ElevatedButton.icon(
                                 onPressed: () {
                                   copy(data);
@@ -237,24 +264,47 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 ),
                                 style: ElevatedButton.styleFrom(
                                   iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0]
+                                  backgroundColor: widget.colors![0],
                                 ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 15),
+                          if (type == 'text') 
+                          if (!context.read<OptionController>().options.first.copyToClipboard!)
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                copy(data);
+                              },
+                              icon: const Icon(
+                                Icons.copy_all_rounded
+                              ),
+                              label: Text(
+                                "Copy Text",
+                                style: GoogleFonts.quicksand(
+                                  color: widget.textColor,
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                iconColor: widget.textColor,
+                                backgroundColor: widget.colors![0],
+                              ),
+                            ),
                           const SizedBox(height: 15),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               OutlinedButton.icon(
                                 onPressed: () => Share.share(data),
-                                icon: const Icon(
-                                  Icons.share_rounded
+                                icon: Icon(
+                                  Icons.share_rounded,
+                                  color: widget.colors![1],
                                 ),
                                 label: Text(
                                   'Share',
                                   style: GoogleFonts.quicksand(
-                                    color: widget.colors![0],
+                                    color: widget.colors![1],
                                     fontWeight: FontWeight.bold
                                   ),
                                 )
@@ -265,16 +315,17 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                               OutlinedButton.icon(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  scannerController.start();
+                                  scannerController!.start();
                                   controller.repeat();
                                 },
-                                icon: const Icon(
-                                  Icons.qr_code_rounded
+                                icon: Icon(
+                                  Icons.qr_code_rounded,
+                                  color: widget.colors![1],
                                 ),
                                 label: Text(
                                   'Scan Again',
                                   style: GoogleFonts.quicksand(
-                                    color: widget.colors![0],
+                                    color: widget.colors![1],
                                     fontWeight: FontWeight.bold
                                   )
                                 ),
@@ -292,6 +343,8 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         ),
       )
     );
+
+    context.read<OptionController>().options.first.copyToClipboard! ? copy(data) : null;
   }
   
   Future<void> openURL(String data) async {
@@ -340,7 +393,6 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
   
   @override
   Widget build(BuildContext context) {
-    process('https://jw.org');
     return Scaffold(
       backgroundColor: widget.colors![0],
       appBar: AppBar(
@@ -356,11 +408,37 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
           ),
         ),
         actions: [
-          !flashEnabled ? IconButton(
+           context.read<OptionController>().options.first.facing == CameraFacing.back ? IconButton(
+            onPressed: () {
+              context.read<OptionController>().setCamera();
+              setState(() {
+                scannerController = MobileScannerController(
+                  facing: CameraFacing.front,
+                );
+              });
+            },
+            icon: const Icon(
+              Icons.flip_camera_ios_outlined
+            ),
+          ) : IconButton(
+            onPressed: () {
+              context.read<OptionController>().setCamera();
+              setState(() {
+                scannerController = MobileScannerController(
+                  facing: CameraFacing.back
+                );
+              });
+            },
+            icon: const Icon(
+              Icons.flip_camera_ios_rounded
+            ),
+          ),
+
+          !flashEnabled! ? IconButton(
             onPressed: () {
               setState(() {
-                scannerController.toggleTorch();
-                flashEnabled = !flashEnabled;
+                scannerController!.toggleTorch();
+                flashEnabled = !flashEnabled!;
               });
             },
             icon: const Icon(
@@ -369,8 +447,8 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
           ) : IconButton(
             onPressed: () {
               setState(() {
-                scannerController.toggleTorch();
-                flashEnabled = !flashEnabled;
+                scannerController!.toggleTorch();
+                flashEnabled = !flashEnabled!;
               });
             },
             icon: const Icon(
@@ -392,18 +470,21 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
               }
             },
           ),
-          Opacity(
-            opacity: .5,
-            child: Center(
-              child: LottieBuilder.asset(
-                'animations/code-scanning.json',
-                controller: controller,
-                filterQuality: FilterQuality.high,
-                onLoaded: (e) {
-                  controller
-                    ..duration = const Duration(seconds: 2)
-                    ..repeat();
-                }
+          GestureDetector(
+            // onTap: () => process('test'),
+            child: Opacity(
+              opacity: .5,
+              child: Center(
+                child: LottieBuilder.asset(
+                  'animations/code-scanning.json',
+                  controller: controller,
+                  filterQuality: FilterQuality.high,
+                  onLoaded: (e) {
+                    controller
+                      ..duration = const Duration(seconds: 2)
+                      ..repeat();
+                  }
+                ),
               ),
             ),
           )
