@@ -62,7 +62,21 @@ class OptionController extends ChangeNotifier{
     fetchOptions();
   }
 
-  setVibrations(dynamic isar) async {
+  setBeep() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.beep == true) {
+        initOptions.beep = false;
+      } else {
+        initOptions.beep = true;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.beep = initOptions.beep;
+    }
+    fetchOptions();
+  }
+
+  setVibrations() async {
     var initOptions = await isar.options.get(1);
     if (initOptions != null) {
       if (initOptions.vibrate == true) {
@@ -72,6 +86,88 @@ class OptionController extends ChangeNotifier{
       }
       await isar.writeTxn(() => isar.options.put(initOptions));
       options.first.vibrate = initOptions.vibrate;
+    }
+    fetchOptions();
+  }
+
+  setClipboard() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.copyToClipboard == true) {
+        initOptions.copyToClipboard = false;
+      } else {
+        initOptions.copyToClipboard = true;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.copyToClipboard = initOptions.copyToClipboard;
+    }
+    fetchOptions();
+  }
+
+  setDetectionSpeed() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.detectionSpeed == DetectionSpeed.unrestricted) {
+        initOptions.detectionSpeed = DetectionSpeed.normal;
+      } else if (initOptions.detectionSpeed == DetectionSpeed.normal) {
+        initOptions.detectionSpeed = DetectionSpeed.noDuplicates;
+      } else {
+        initOptions.detectionSpeed = DetectionSpeed.unrestricted;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.detectionSpeed = initOptions.detectionSpeed;
+    }
+    fetchOptions();
+  }
+
+  setCamera() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.facing == CameraFacing.back) {
+        initOptions.facing = CameraFacing.front;
+      } else {
+        initOptions.facing = CameraFacing.back;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.facing = initOptions.facing;
+    }
+    fetchOptions();
+  }
+
+  setFlash() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.flash == true) {
+        initOptions.flash = false;
+      } else {
+        initOptions.flash = true;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.flash = initOptions.flash;
+    }
+    fetchOptions();
+  }
+
+  setQRSize(size) async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      initOptions.qrSize = size;
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.qrSize = initOptions.qrSize;
+    }
+    fetchOptions();
+  }
+
+  setTransparent() async {
+    var initOptions = await isar.options.get(1);
+    if (initOptions != null) {
+      if (initOptions.qrTransparent == true) {
+        initOptions.qrTransparent = false;
+      } else {
+        initOptions.qrTransparent = true;
+      }
+      await isar.writeTxn(() => isar.options.put(initOptions));
+      options.first.qrTransparent = initOptions.qrTransparent;
     }
     fetchOptions();
   }

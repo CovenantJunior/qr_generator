@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_contacts/flutter_contacts.dart' as contacts;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -79,6 +80,23 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
       });
     }
 
+    void copy(data) {
+      Clipboard.setData (
+        ClipboardData(
+          text: data
+          )
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Copied!',
+            style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -89,9 +107,9 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
           controller.repeat();
         },
         child: DraggableScrollableSheet(
-          initialChildSize: 0.6,
-          minChildSize: 0.4,
-          maxChildSize: 0.9,
+          initialChildSize: 0.3,
+          minChildSize: 0.3,
+          maxChildSize: 0.4,
           builder: (BuildContext context, ScrollController scrollController) { 
             return Container(
               decoration: BoxDecoration(
@@ -112,12 +130,20 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                       ),
                     ),
                   ),
-                  const Text(
+                  Text(
                     'Scanned Result:',
+                    style: GoogleFonts.quicksand(
+                      color: widget.colors![0],
+                      fontWeight: FontWeight.w700
+                    ),
                   ),
                   const SizedBox(height: 20),
                   Text(
                     'Type: ${type.toUpperCase()}',
+                    style: GoogleFonts.quicksand(
+                      color: widget.colors![0],
+                      fontWeight: FontWeight.bold
+                    )
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -127,34 +153,94 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                           SelectableText(data),
                           const SizedBox(height: 15),
                           if (type == 'url') 
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              openURL(data);
-                            },
-                            icon: const Icon(
-                              Icons.open_in_browser_rounded
-                            ),
-                            label: const Text(
-                              "Open URL"
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50)
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  openURL(data);
+                                },
+                                icon: const Icon(
+                                  Icons.open_in_browser_rounded
+                                ),
+                                label: Text(
+                                  "Open URL",
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.textColor,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  iconColor: widget.textColor,
+                                  backgroundColor: widget.colors![0]
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  copy(data);
+                                },
+                                icon: const Icon(
+                                  Icons.copy_rounded
+                                ),
+                                label: Text(
+                                  "Copy URL",
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.textColor,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  iconColor: widget.textColor,
+                                  backgroundColor: widget.colors![0]
+                                ),
+                              ),
+                            ],
                           ),
                           if (type == 'contact') 
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              saveContact(data);
-                            },
-                            icon: const Icon(
-                              Icons.save_outlined
-                            ),
-                            label: const Text(
-                              "Save Contact"
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(50)
-                            ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  saveContact(data);
+                                },
+                                icon: const Icon(
+                                  Icons.save_outlined
+                                ),
+                                label: Text(
+                                  "Save Contact",
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.textColor,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  iconColor: widget.textColor,
+                                  backgroundColor: widget.colors![0]
+                                ),
+                              ),
+                              const SizedBox(width: 20),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  copy(data);
+                                },
+                                icon: const Icon(
+                                  Icons.copy_all_rounded
+                                ),
+                                label: Text(
+                                  "Copy Contact",
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.textColor,
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  iconColor: widget.textColor,
+                                  backgroundColor: widget.colors![0]
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 15),
                           Row(
@@ -165,10 +251,16 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 icon: const Icon(
                                   Icons.share_rounded
                                 ),
-                                label: const Text('Share')
+                                label: Text(
+                                  'Share',
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.colors![0],
+                                    fontWeight: FontWeight.bold
+                                  ),
+                                )
                               ),
                               const SizedBox(
-                                width: 40,
+                                width: 20,
                               ),
                               OutlinedButton.icon(
                                 onPressed: () {
@@ -179,7 +271,13 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
                                 icon: const Icon(
                                   Icons.qr_code_rounded
                                 ),
-                                label: const Text('Scan Again')
+                                label: Text(
+                                  'Scan Again',
+                                  style: GoogleFonts.quicksand(
+                                    color: widget.colors![0],
+                                    fontWeight: FontWeight.bold
+                                  )
+                                ),
                               )
                             ],
                           )
@@ -219,10 +317,14 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
     try {
       await contact.insert();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text( 'Saved!'),
-          backgroundColor: Colors.blue,
-          duration: Duration(seconds: 3),
+        SnackBar(
+          content: Text( 
+            'Saved!',
+            style: GoogleFonts.quicksand(
+              fontWeight: FontWeight.bold
+            ),
+          ),
+          duration: const Duration(seconds: 3),
         ),
       );
     } catch (e) {
@@ -238,6 +340,7 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
   
   @override
   Widget build(BuildContext context) {
+    process('https://jw.org');
     return Scaffold(
       backgroundColor: widget.colors![0],
       appBar: AppBar(
@@ -248,7 +351,8 @@ class _QRScanState extends State<QRScan> with SingleTickerProviderStateMixin {
         title: Text(
           "Scan QR Code",
           style: GoogleFonts.quicksand(
-            color: widget.textColor,
+            color: widget.colors![0],
+            fontWeight: FontWeight.bold
           ),
         ),
         actions: [

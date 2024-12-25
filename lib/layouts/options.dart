@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_generator/components/option_tile.dart';
@@ -22,9 +23,78 @@ class Options extends StatefulWidget {
 
 class _OptionsState extends State<Options> {
 
-  option(id) {
-    return false;
-  }
+  void speedInfo() {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(
+        "Scan Mode",
+        textAlign: TextAlign.center,
+        style: GoogleFonts.quicksand(
+          color: widget.textColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      backgroundColor: widget.colors![0],
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: Text(
+              "NORMAL",
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: widget.textColor,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            subtitle: Text(
+              "Scans barcodes with a timeout between scans.",
+              style: GoogleFonts.quicksand(
+                fontSize: 14,
+                color: widget.textColor,
+              ),
+            ),
+          ),
+          ListTile(
+            title: Text(
+              "TURBO MODE",
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: widget.textColor,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            subtitle: Text(
+              "Scans barcodes continuously, may cause memory issues.",
+              style: GoogleFonts.quicksand(
+                fontSize: 14,
+                color: widget.textColor,
+              ),
+            ),
+          ),
+          ListTile(
+            title: Text(
+              "NO DUPLICATES",
+              style: GoogleFonts.quicksand(
+                fontSize: 16,
+                color: widget.textColor,
+                fontWeight: FontWeight.bold
+              ),
+            ),
+            subtitle: Text(
+              "Scans each barcode only once until a new one is scanned.",
+              style: GoogleFonts.quicksand(
+                fontSize: 14,
+                color: widget.textColor,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
   List<Map<String, dynamic>> themes = Themes().themes;
 
@@ -42,6 +112,19 @@ class _OptionsState extends State<Options> {
     bool? copyToClipboard = options.first.copyToClipboard;
     bool? flash = options.first.flash;
     DetectionSpeed detectionSpeed = options.first.detectionSpeed;
+    String? optionName;
+    switch (detectionSpeed.toString().split('.').last) {
+      case 'normal':
+        optionName = 'NORMAL';
+        break;
+      case 'unrestricted':
+        optionName = 'TURBO MODE';
+        break;
+      case 'noDuplicates':
+        optionName = 'NO DUPLICATES';
+        break;
+      default:
+    }
     CameraFacing facing = options.first.facing;
     int? qrSize = options.first.qrSize;
     bool? qrTransparent = options.first.qrTransparent;
@@ -62,25 +145,25 @@ class _OptionsState extends State<Options> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OptionTile(
+                    id: 1,
                     title: "Beep",
                     icon: Icons.volume_up_outlined,
-                    fn:  option(1),
                     enabled: beep!,
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
                   OptionTile(
+                    id: 2,
                     title: "Vibrate",
                     icon: Icons.vibration_outlined,
-                    fn:  option(2),
                     enabled: vibrate!,
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
                   OptionTile(
+                    id: 3,
                     title: "Clipboard",
                     icon: Icons.copy,
-                    fn:  option(3),
                     enabled: copyToClipboard!,
                     colors: widget.colors,
                     textColor: widget.textColor
@@ -94,26 +177,42 @@ class _OptionsState extends State<Options> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  OptionTile(
-                    title: "Detection Speed\n'${detectionSpeed.toString().split('.').last}'",
-                    icon: Icons.speed_rounded,
-                    fn:  option(4),
-                    enabled: true,
-                    colors: widget.colors,
-                    textColor: widget.textColor
+                  Stack(
+                    children: [
+                      OptionTile(
+                        id: 4,
+                        title: "Scan Mode\n'$optionName'",
+                        icon: Icons.speed_rounded,
+                        enabled: true,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      Positioned(
+                        right: 10,
+                        top: 10,
+                        child: GestureDetector(
+                          onTap: speedInfo,
+                          child: Icon(
+                            Icons.help_outline_rounded,
+                            color: widget.textColor,
+                            size: 20,
+                          ),
+                        ),
+                      )
+                    ]
                   ),
                   OptionTile(
-                    title: "Camera\n'${facing.toString().split('.').last}'",
+                    id: 5,
+                    title: "Camera\n'${facing.toString().split('.').last.toUpperCase()}'",
                     icon: Icons.flip_camera_ios_outlined,
-                    fn:  option(5),
                     enabled: true,
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
                   OptionTile(
+                    id: 6,
                     title: "Flash",
                     icon: flash! ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                    fn:  option(6),
                     enabled: flash,
                     colors: widget.colors,
                     textColor: widget.textColor
@@ -128,17 +227,17 @@ class _OptionsState extends State<Options> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   OptionTile(
+                    id: 7,
                     title: "QR Size\n'$qrSize px'",
                     icon: Icons.qr_code_rounded,
-                    fn:  option(7),
                     enabled: true,
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
                   OptionTile(
+                    id: 8,
                     title: "Transparent",
                     icon: Icons.water_drop_sharp,
-                    fn:  option(8),
                     enabled: qrTransparent!,
                     colors: widget.colors,
                     textColor: widget.textColor
@@ -146,9 +245,9 @@ class _OptionsState extends State<Options> {
                   Stack(
                     children: [
                       OptionTile(
+                        id: 9,
                         title: "Remove Ads",
                         icon: Icons.movie_filter_outlined,
-                        fn:  option(9),
                         enabled: true,
                         colors: widget.colors,
                         textColor: widget.textColor
@@ -158,7 +257,7 @@ class _OptionsState extends State<Options> {
                         child: Icon(
                           Icons.workspace_premium_outlined,
                           color: widget.textColor,
-                          size: 40,
+                          size: 30,
                         ),
                       )
                     ],
@@ -177,9 +276,10 @@ class _OptionsState extends State<Options> {
               padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 0.0),
               child: Divider(
                 color: widget.textColor,
+                thickness: .4,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             SizedBox(
               height: 170,
               child: ListView(
