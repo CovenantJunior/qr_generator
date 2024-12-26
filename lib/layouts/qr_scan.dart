@@ -31,7 +31,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
 
   String type = 'text';
   bool? flashEnabled;
-  MobileScannerController? scannerController;
+  MobileScannerController? backScannerController;
+  MobileScannerController? frontScannerController;
   
   late AnimationController controller;
 
@@ -65,13 +66,18 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
       vsync: this
     );
     flashEnabled = context.watch<OptionController>().options.first.flash!;
-    scannerController = MobileScannerController(
+    backScannerController = MobileScannerController(
       detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
-      facing: context.read<OptionController>().options.first.facing,
+      facing: CameraFacing.back,
+    );
+    frontScannerController = MobileScannerController(
+      detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
+      facing: CameraFacing.front,
     );
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (context.read<OptionController>().options.first.flash!) {
-        scannerController!.toggleTorch();
+        backScannerController!.toggleTorch();
+        frontScannerController!.toggleTorch();
       }
     });
   }
@@ -100,7 +106,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     : 
       null;
     
-    scannerController!.stop();
+    backScannerController!.stop();
+    frontScannerController!.stop();
     controller.stop();
     context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
 
@@ -315,7 +322,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                               OutlinedButton.icon(
                                 onPressed: () {
                                   Navigator.pop(context);
-                                  scannerController!.start();
+                                  backScannerController!.start();
+                                  frontScannerController!.start();
                                   controller.repeat();
                                 },
                                 icon: Icon(
@@ -411,11 +419,6 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
            context.read<OptionController>().options.first.facing == CameraFacing.back ? IconButton(
             onPressed: () {
               context.read<OptionController>().setCamera();
-              setState(() {
-                scannerController = MobileScannerController(
-                  facing: CameraFacing.front,
-                );
-              });
             },
             icon: const Icon(
               Icons.flip_camera_ios_outlined
@@ -423,11 +426,6 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           ) : IconButton(
             onPressed: () {
               context.read<OptionController>().setCamera();
-              setState(() {
-                scannerController = MobileScannerController(
-                  facing: CameraFacing.back
-                );
-              });
             },
             icon: const Icon(
               Icons.flip_camera_ios_rounded
@@ -437,7 +435,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           !flashEnabled! ? IconButton(
             onPressed: () {
               setState(() {
-                scannerController!.toggleTorch();
+                backScannerController!.toggleTorch();
+                frontScannerController!.toggleTorch();
                 flashEnabled = !flashEnabled!;
               });
             },
@@ -447,7 +446,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           ) : IconButton(
             onPressed: () {
               setState(() {
-                scannerController!.toggleTorch();
+                backScannerController!.toggleTorch();
+                frontScannerController!.toggleTorch();
                 flashEnabled = !flashEnabled!;
               });
             },
@@ -461,7 +461,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
       Stack(
         children: [
           MobileScanner(
-            controller: scannerController,
+            controller: context.read<OptionController>().options.first.facing == CameraFacing.back ? backScannerController : frontScannerController,
             onDetect: (e) {
               final code = e.barcodes.first;
               if (code.rawValue != null) {
