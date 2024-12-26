@@ -460,8 +460,17 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
       body: 
       Stack(
         children: [
-          MobileScanner(
-            controller: context.read<OptionController>().options.first.facing == CameraFacing.back ? backScannerController : frontScannerController,
+          context.watch<OptionController>().options.first.facing == CameraFacing.back ? MobileScanner(
+            controller: backScannerController,
+            onDetect: (e) {
+              final code = e.barcodes.first;
+              if (code.rawValue != null) {
+                String? value = code.rawValue;
+                process(value!);
+              }
+            },
+          ) : MobileScanner(
+            controller: frontScannerController,
             onDetect: (e) {
               final code = e.barcodes.first;
               if (code.rawValue != null) {
