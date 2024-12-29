@@ -102,6 +102,9 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     scannerController!.stop();
     controller.stop();
     context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
+    setState(() {
+      flashEnabled = !flashEnabled!;
+    });
 
     if (data.startsWith('BEGIN:VCARD')) {
       setState(() {
@@ -448,7 +451,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
             },
           ),
           GestureDetector(
-            onTap: () => process('test'),
+            // onTap: () => process('test'),
             child: Opacity(
               opacity: .5,
               child: Center(
