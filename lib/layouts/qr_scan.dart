@@ -48,7 +48,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     if (statuses.containsValue(PermissionStatus.denied)) {
       Fluttertoast.showToast(
         msg: "App may malfunctoin without granted permissions",
-        toastLength: Toast.LENGTH_SHORT,
+        toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.red,
@@ -64,7 +64,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     controller = AnimationController(
       vsync: this
     );
-    flashEnabled = context.watch<OptionController>().options.first.flash!;
+    flashEnabled = context.read<OptionController>().options.first.flash!;
     scannerController = MobileScannerController(
       detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
       facing: context.read<OptionController>().options.first.facing,
@@ -78,15 +78,14 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
 
   void copy(data) {
     Clipboard.setData(ClipboardData(text: data));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Copied!',
-          style: GoogleFonts.quicksand(fontWeight: FontWeight.bold),
-        ),
-        duration: const Duration(seconds: 3),
-      ),
-    );
+    Fluttertoast.showToast(
+        msg: "Copied",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: widget.colors![0],
+        textColor: widget.textColor
+      );
   }
 
   void beep() async {
@@ -369,24 +368,22 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
 
     try {
       await contact.insert();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text( 
-            'Saved!',
-            style: GoogleFonts.quicksand(
-              fontWeight: FontWeight.bold
-            ),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
+      Fluttertoast.showToast(
+        msg: "Saved",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: widget.colors![0],
+        textColor: widget.textColor
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Something went wrong!'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
+      Fluttertoast.showToast(
+        msg: "Something went wrong",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white
       );
     }
   }
@@ -451,7 +448,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
             },
           ),
           GestureDetector(
-            // onTap: () => process('test'),
+            onTap: () => process('test'),
             child: Opacity(
               opacity: .5,
               child: Center(
