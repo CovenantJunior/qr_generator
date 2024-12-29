@@ -92,13 +92,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     await player.play(AssetSource('audios/beep.mp3'));
   }
 
-  void process(String data) {
-    context.read<OptionController>().options.first.beep!
-    ?
-      beep()
-    : 
-      null;
-    
+  void process(String data) {    
     scannerController!.stop();
     controller.stop();
     context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
@@ -443,6 +437,9 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           MobileScanner(
             controller: scannerController,
             onDetect: (e) {
+              context.read<OptionController>().options.first.beep!
+              ? beep()
+              : null;
               final code = e.barcodes.first;
               if (code.rawValue != null) {
                 String? value = code.rawValue;
