@@ -234,25 +234,13 @@ class _OptionsState extends State<Options> {
                     colors: widget.colors,
                     textColor: widget.textColor
                   ),
-                  Stack(
-                    children: [
-                      OptionTile(
-                        id: 8,
-                        title: "Transparent",
-                        icon: Icons.water_drop_sharp,
-                        enabled: qrTransparent!,
-                        colors: widget.colors,
-                        textColor: widget.textColor
-                      ),
-                      Positioned(
-                        right: 0,
-                        child: Icon(
-                          Icons.workspace_premium_outlined,
-                          color: qrTransparent ? widget.textColor : widget.colors![0],
-                          size: 30,
-                        ),
-                      )
-                    ]
+                  OptionTile(
+                    id: 8,
+                    title: "Transparent",
+                    icon: Icons.water_drop_sharp,
+                    enabled: qrTransparent!,
+                    colors: widget.colors,
+                    textColor: widget.textColor
                   ),
                   Stack(
                     children: [

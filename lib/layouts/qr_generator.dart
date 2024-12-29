@@ -154,27 +154,30 @@ class _QRGeneratorState extends State<QRGenerator> {
                     child: Column(
                       children: [
                         SegmentedButton<String>(
-                          segments: const [
+                          segments: [
                             ButtonSegment(
                               enabled: true,
                               value: 'text',
-                              label: Text('Text'),
+                              label: const Text('Text'),
                               icon: Icon(
-                                Icons.text_fields_rounded
+                                Icons.text_fields_rounded,
+                                color: widget.colors![1]
                               )
                             ),
                             ButtonSegment(
                               value: 'url',
-                              label: Text('URL'),
+                              label: const Text('URL'),
                               icon: Icon(
-                                Icons.link_rounded
+                                Icons.link_rounded,
+                                color: widget.colors![1]
                               )
                             ),
                             ButtonSegment(
                               value: 'contact',
-                              label: Text('Contact'),
+                              label: const Text('Contact'),
                               icon: Icon(
-                                Icons.contact_page_rounded
+                                Icons.contact_page_rounded,
+                                color: widget.colors![1]
                               )
                             ),
                           ],
@@ -208,6 +211,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                             controller: screenshotController,
                             child: QrImageView(
                               data: data,
+                              backgroundColor: context.read<OptionController>().options.first.qrTransparent! ? Colors.transparent : Colors.white,
                               version: QrVersions.auto,
                               size: context.read<OptionController>().options.first.qrSize!.toDouble(),
                               errorCorrectionLevel: QrErrorCorrectLevel.H,
@@ -224,7 +228,10 @@ class _QRGeneratorState extends State<QRGenerator> {
               ElevatedButton.icon(
                 onPressed: () => shareQR(),
                 label: const Text('Share Code'),
-                icon: const Icon(Icons.share),
+                icon: Icon(
+                  Icons.share,
+                  color: widget.colors![1],
+                ),
               )
             ],
           ),
