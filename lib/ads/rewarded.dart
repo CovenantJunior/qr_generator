@@ -6,6 +6,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class RewardedAds {
   /// The AdMob ad unit to show for rewarded ads.
+  /// TODO: replace this test ad unit with your own ad unit
   final String rewardedAdUnitId = Platform.isAndroid
       // Use this ad unit on Android...
       ? 'ca-app-pub-3940256099942544/5224354917'
