@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_generator/ads/interstitial.dart';
 import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -92,7 +93,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     await player.play(AssetSource('audios/beep.mp3'));
   }
 
-  void process(String data) {    
+  void process(String data) {
     scannerController!.stop();
     controller.stop();
     context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
@@ -341,6 +342,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     );
 
     context.read<OptionController>().options.first.copyToClipboard! ? copy(data) : null;
+    InterstitialAds().loadInterstitialAd(context);
   }
   
   Future<void> openURL(String data) async {
@@ -436,7 +438,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
         children: [
           MobileScanner(
             controller: scannerController,
-            onDetect: (e) {
+            onDetect: (e) async{
               context.read<OptionController>().options.first.beep!
               ? beep()
               : null;

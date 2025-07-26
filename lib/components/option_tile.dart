@@ -26,7 +26,7 @@ class OptionTile extends StatefulWidget {
 }
 
 class _OptionTileState extends State<OptionTile> {
-  int? _selectedSize;
+  int? selectedSize;
 
   List<DropdownMenuItem<int>> getDropdownItems() {
     List<DropdownMenuItem<int>> items = [];
@@ -59,7 +59,7 @@ class _OptionTileState extends State<OptionTile> {
           value: context.read<OptionController>().options.first.qrSize,
           onChanged: (int? newValue) {
             setState(() {
-              _selectedSize = newValue;
+              selectedSize = newValue;
             });
             context.read<OptionController>().setQRSize(newValue);
             Navigator.pop(context);
@@ -107,7 +107,7 @@ class _OptionTileState extends State<OptionTile> {
       onTap: () => option(widget.id),
       child: Card(
         elevation: 10,
-        color: !widget.enabled ? widget.colors![1] : widget.colors![0],
+        color: !widget.enabled ? widget.colors![1] : widget.colors![1],
         child: SizedBox(
           height: 100,
           width: 100,
@@ -115,7 +115,7 @@ class _OptionTileState extends State<OptionTile> {
             children: [
               Icon(
                 widget.icon,
-                color: !widget.enabled ? widget.colors![0] : widget.textColor,
+                color: !widget.enabled ? Colors.blueGrey : widget.textColor,
                 size: 30,
               ),
               const SizedBox(height: 10),
@@ -123,7 +123,7 @@ class _OptionTileState extends State<OptionTile> {
                 widget.title!,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.quicksand(
-                  color: !widget.enabled ? widget.colors![0] : widget.textColor,
+                  color: !widget.enabled ? Colors.blueGrey : widget.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12
                 ),

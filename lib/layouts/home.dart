@@ -161,7 +161,7 @@ class _HomeState extends State<Home> {
               title,
               style: GoogleFonts.quicksand(
                 color: widget.textColor,
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold
               ),
             ),

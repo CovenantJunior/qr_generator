@@ -5,9 +5,12 @@
     <uses-permission android:name="android.permission.FLASHLIGHT"/>
 
     <application
-        android:label="qr_generator"
+        android:label="QR Code Generator"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-8379581354079241~7789079779"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

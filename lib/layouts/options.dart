@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_generator/components/option_tile.dart';
-import 'package:qr_generator/components/theme_option_tile.dart';
 import 'package:qr_generator/components/themes.dart';
 import 'package:qr_generator/controllers/option_controller.dart';
 
@@ -128,7 +127,6 @@ class _OptionsState extends State<Options> {
     CameraFacing facing = options.first.facing;
     int? qrSize = options.first.qrSize;
     bool? qrTransparent = options.first.qrTransparent;
-    int? qrTheme = options.first.theme;
 
     return Scaffold(
       backgroundColor: widget.colors![0],
@@ -263,42 +261,6 @@ class _OptionsState extends State<Options> {
                     ],
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 70),
-            Icon(
-              Icons.color_lens_outlined,
-              color: widget.textColor,
-              size: 40,
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 0.0),
-              child: Divider(
-                color: widget.textColor,
-                thickness: .4,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 170,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: themes.map((theme) {
-                  return Row(
-                    children: [
-                      ThemeOptionTile(
-                        id: theme['id'],
-                        title: theme['name'],
-                        icon: Icons.volume_up_outlined,
-                        enabled: theme['id'] == qrTheme,
-                        color: theme['color'],
-                        textColor: theme['textColor'],
-                      ),
-                      const SizedBox(width: 20)
-                    ],
-                  );
-                }).toList(),
               ),
             ),
           ],
