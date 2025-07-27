@@ -6,8 +6,8 @@ class Themes {
       'id': 1,
       'name': 'Royal',
       'color': [
-        const Color.fromARGB(255, 43, 0, 50),
-        const Color.fromARGB(255, 15, 0, 15),
+        const Color.fromARGB(255, 16, 16, 16),
+        const Color.fromARGB(255, 0, 0, 0),
       ],
       'textColor': const Color.fromARGB(255, 255, 255, 255),
     },

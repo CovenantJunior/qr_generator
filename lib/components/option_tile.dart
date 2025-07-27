@@ -106,7 +106,7 @@ class _OptionTileState extends State<OptionTile> {
     return GestureDetector(
       onTap: () => option(widget.id),
       child: Card(
-        elevation: 10,
+        elevation: 0,
         color: !widget.enabled ? widget.colors![1] : widget.colors![1],
         child: SizedBox(
           height: 100,
@@ -116,7 +116,7 @@ class _OptionTileState extends State<OptionTile> {
               Icon(
                 widget.icon,
                 color: !widget.enabled ? Colors.blueGrey : widget.textColor,
-                size: 30,
+                size: 20,
               ),
               const SizedBox(height: 10),
               Text(

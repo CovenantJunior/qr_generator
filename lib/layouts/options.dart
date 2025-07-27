@@ -133,10 +133,22 @@ class _OptionsState extends State<Options> {
       appBar: AppBar(
         leading: const SizedBox(),
         backgroundColor: widget.colors![0],
+        centerTitle: true,
+        title: const Text(
+          "Settings",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Quicksand',
+            fontWeight: FontWeight.bold
+          ),
+        ),
       ),
       body: 
         Column(
           children: [
+            const SizedBox(
+              height: 30,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
               child: Row(

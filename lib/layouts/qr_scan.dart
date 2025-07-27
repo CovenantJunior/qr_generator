@@ -14,14 +14,16 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
-class QRScan extends StatefulWidget {
-  List<Color>? colors;
-  Color? textColor;
 
-  QRScan({
+
+class QRScan extends StatefulWidget {
+  final List<Color>? colors;
+  final Color? textColor;
+
+  const QRScan({
     super.key,
     required this.colors,
-    required this.textColor
+    required this.textColor,
   });
 
   @override
@@ -29,31 +31,28 @@ class QRScan extends StatefulWidget {
 }
 
 class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
-
   String type = 'text';
   bool? flashEnabled;
   MobileScannerController? scannerController;
-  
   late AnimationController controller;
-
+  bool beep = true;
   final player = AudioPlayer();
+  bool showZoomSlider = false; // Toggle for zoom slider visibility
+  double currentZoomScale = 1.0; // Track current zoom level
 
   Future<void> requestPermissions() async {
-    // Request the necessary permissions
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
-      // Add other permissions you need here
     ].request();
 
-    // Check if all permissions are granted
     if (statuses.containsValue(PermissionStatus.denied)) {
       Fluttertoast.showToast(
-        msg: "App may malfunctoin without granted permissions",
+        msg: "Camera permission is required to scan QR codes",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.red,
-        textColor: widget.colors![0]
+        textColor: widget.textColor,
       );
     }
   }
@@ -62,14 +61,13 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     requestPermissions();
-    controller = AnimationController(
-      vsync: this
-    );
+    controller = AnimationController(vsync: this);
     flashEnabled = context.read<OptionController>().options.first.flash!;
     scannerController = MobileScannerController(
       detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
       facing: context.read<OptionController>().options.first.facing,
     );
+    scannerController!.setZoomScale(currentZoomScale); // Set initial zoom
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (context.read<OptionController>().options.first.flash!) {
         scannerController!.toggleTorch();
@@ -77,26 +75,24 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     });
   }
 
-  void copy(data) {
+  void copy(String data) {
     Clipboard.setData(ClipboardData(text: data));
     Fluttertoast.showToast(
-        msg: "Copied",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: widget.colors![0],
-        textColor: widget.textColor
-      );
-  }
-
-  void beep() async {
-    await player.play(AssetSource('audios/beep.mp3'));
+      msg: "Copied",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.BOTTOM,
+      timeInSecForIosWeb: 1,
+      backgroundColor: widget.colors![0],
+      textColor: widget.textColor,
+    );
   }
 
   void process(String data) {
     scannerController!.stop();
     controller.stop();
-    context.read<OptionController>().options.first.vibrate! ? Vibration.vibrate(duration: 50) : null;
+    if (context.read<OptionController>().options.first.vibrate!) {
+      Vibration.vibrate(duration: 50);
+    }
     setState(() {
       flashEnabled = !flashEnabled!;
     });
@@ -105,7 +101,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
       setState(() {
         type = 'contact';
       });
-    } else if(data.startsWith('http://') || data.startsWith('https://')) {
+    } else if (data.startsWith('http://') || data.startsWith('https://')) {
       setState(() {
         type = 'url';
       });
@@ -114,7 +110,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
         type = 'text';
       });
     }
-    
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -128,11 +124,11 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           initialChildSize: 0.3,
           minChildSize: 0.3,
           maxChildSize: 0.4,
-          builder: (BuildContext context, ScrollController scrollController) { 
+          builder: (BuildContext context, ScrollController scrollController) {
             return Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24))
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
               ),
               child: Column(
                 children: [
@@ -142,9 +138,9 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                       width: 40,
                       height: 4,
                       margin: const EdgeInsets.only(bottom: 24),
-                      decoration:  BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.grey,
-                        borderRadius: BorderRadius.circular(2)
+                        borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                   ),
@@ -152,7 +148,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                     'Scanned Result:',
                     style: GoogleFonts.quicksand(
                       color: widget.colors![1],
-                      fontWeight: FontWeight.w700
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -160,8 +156,8 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                     'Type: ${type.toUpperCase()}',
                     style: GoogleFonts.quicksand(
                       color: widget.colors![1],
-                      fontWeight: FontWeight.bold
-                    )
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Expanded(
                     child: SingleChildScrollView(
@@ -170,117 +166,110 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                         children: [
                           SelectableText(data),
                           const SizedBox(height: 15),
-                          if (type == 'url') 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  openURL(data);
-                                },
-                                icon: Icon(
-                                  Icons.open_in_browser_rounded,
-                                  color: widget.textColor,
-                                ),
-                                label: Text(
-                                  "Open URL",
-                                  style: GoogleFonts.quicksand(
+                          if (type == 'url')
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    openURL(data);
+                                  },
+                                  icon: Icon(
+                                    Icons.open_in_browser_rounded,
                                     color: widget.textColor,
-                                    fontWeight: FontWeight.bold
+                                  ),
+                                  label: Text(
+                                    "Open URL",
+                                    style: GoogleFonts.quicksand(
+                                      color: widget.textColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    iconColor: widget.textColor,
+                                    backgroundColor: widget.colors![0],
                                   ),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0],
-                                ),
-                              ),
-                              if (!context.read<OptionController>().options.first.copyToClipboard!)
-                              const SizedBox(width: 20),
-                              if (!context.read<OptionController>().options.first.copyToClipboard!)
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  copy(data);
-                                },
-                                icon: Icon(
-                                  Icons.copy_rounded,
-                                  color: widget.textColor,
-                                ),
-                                label: Text(
-                                  "Copy URL",
-                                  style: GoogleFonts.quicksand(
-                                    color: widget.textColor,
-                                    fontWeight: FontWeight.bold
+                                if (!context.read<OptionController>().options.first.copyToClipboard!)
+                                  const SizedBox(width: 20),
+                                if (!context.read<OptionController>().options.first.copyToClipboard!)
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      copy(data);
+                                    },
+                                    icon: Icon(
+                                      Icons.copy_rounded,
+                                      color: widget.textColor,
+                                    ),
+                                    label: Text(
+                                      "Copy URL",
+                                      style: GoogleFonts.quicksand(
+                                        color: widget.textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      iconColor: widget.textColor,
+                                      backgroundColor: widget.colors![0],
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          if (type == 'contact')
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    saveContact(data);
+                                  },
+                                  icon: const Icon(Icons.save_outlined),
+                                  label: Text(
+                                    "Save Contact",
+                                    style: GoogleFonts.quicksand(
+                                      color: widget.textColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    iconColor: widget.textColor,
+                                    backgroundColor: widget.colors![0],
                                   ),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0],
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (type == 'contact') 
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  saveContact(data);
-                                },
-                                icon: const Icon(
-                                  Icons.save_outlined
-                                ),
-                                label: Text(
-                                  "Save Contact",
-                                  style: GoogleFonts.quicksand(
-                                    color: widget.textColor,
-                                    fontWeight: FontWeight.bold
+                                if (!context.read<OptionController>().options.first.copyToClipboard!)
+                                  const SizedBox(width: 20),
+                                if (!context.read<OptionController>().options.first.copyToClipboard!)
+                                  ElevatedButton.icon(
+                                    onPressed: () {
+                                      copy(data);
+                                    },
+                                    icon: const Icon(Icons.copy_all_rounded),
+                                    label: Text(
+                                      "Copy Contact",
+                                      style: GoogleFonts.quicksand(
+                                        color: widget.textColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      iconColor: widget.textColor,
+                                      backgroundColor: widget.colors![0],
+                                    ),
                                   ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0],
-                                ),
-                              ),
-                              if (!context.read<OptionController>().options.first.copyToClipboard!)
-                              const SizedBox(width: 20),
-                              if (!context.read<OptionController>().options.first.copyToClipboard!)
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  copy(data);
-                                },
-                                icon: const Icon(
-                                  Icons.copy_all_rounded
-                                ),
-                                label: Text(
-                                  "Copy Contact",
-                                  style: GoogleFonts.quicksand(
-                                    color: widget.textColor,
-                                    fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  iconColor: widget.textColor,
-                                  backgroundColor: widget.colors![0],
-                                ),
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
                           const SizedBox(height: 15),
-                          if (type == 'text') 
-                          if (!context.read<OptionController>().options.first.copyToClipboard!)
+                          if (type == 'text' && !context.read<OptionController>().options.first.copyToClipboard!)
                             ElevatedButton.icon(
                               onPressed: () {
                                 copy(data);
                               },
-                              icon: const Icon(
-                                Icons.copy_all_rounded
-                              ),
+                              icon: const Icon(Icons.copy_all_rounded),
                               label: Text(
                                 "Copy Text",
                                 style: GoogleFonts.quicksand(
                                   color: widget.textColor,
-                                  fontWeight: FontWeight.bold
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -302,13 +291,11 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                                   'Share',
                                   style: GoogleFonts.quicksand(
                                     color: widget.colors![1],
-                                    fontWeight: FontWeight.bold
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                )
+                                ),
                               ),
-                              const SizedBox(
-                                width: 20,
-                              ),
+                              const SizedBox(width: 20),
                               OutlinedButton.icon(
                                 onPressed: () {
                                   Navigator.pop(context);
@@ -323,31 +310,43 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                                   'Scan Again',
                                   style: GoogleFonts.quicksand(
                                     color: widget.colors![1],
-                                    fontWeight: FontWeight.bold
-                                  )
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                              )
+                              ),
                             ],
-                          )
+                          ),
                         ],
                       ),
-                    )
-                  )
+                    ),
+                  ),
                 ],
               ),
             );
           },
         ),
-      )
+      ),
     );
 
-    context.read<OptionController>().options.first.copyToClipboard! ? copy(data) : null;
+    if (context.read<OptionController>().options.first.copyToClipboard!) {
+      copy(data);
+    }
     InterstitialAds().loadInterstitialAd(context);
   }
-  
+
   Future<void> openURL(String data) async {
-    if (await canLaunchUrl(Uri.parse(data))) {
-      launchUrl(Uri.parse(data));
+    final uri = Uri.parse(data);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      Fluttertoast.showToast(
+        msg: "Could not launch URL",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: widget.textColor,
+      );
     }
   }
 
@@ -357,38 +356,58 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
     for (var line in lines) {
       if (line.startsWith('FN:')) name = line.substring(3);
       if (line.startsWith('TEL:')) phone = line.substring(4);
-      if (line.startsWith('EMAIL:')) email = line.substring(5);
+      if (line.startsWith('EMAIL:')) email = line.substring(6); // Adjusted for EMAIL
     }
-    
+
     final contact = contacts.Contact()
-    ..name.first = name!
-    ..phones = [contacts.Phone(phone ?? '')]
-    ..emails = [contacts.Email(email ?? '')];
+      ..name.first = name ?? ''
+      ..phones = [contacts.Phone(phone ?? '')]
+      ..emails = [contacts.Email(email ?? '')];
 
     try {
+      await contacts.FlutterContacts.requestPermission();
       await contact.insert();
       Fluttertoast.showToast(
-        msg: "Saved",
+        msg: "Contact saved",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: widget.colors![0],
-        textColor: widget.textColor
+        textColor: widget.textColor,
       );
     } catch (e) {
       Fluttertoast.showToast(
-        msg: "Something went wrong",
+        msg: "Failed to save contact",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.red,
-        textColor: Colors.white
+        textColor: widget.textColor,
       );
     }
   }
-  
+
+  void updateZoomScale(double scale) {
+    setState(() {
+      currentZoomScale = scale.clamp(1.0, 5.0); // Limit zoom between 1x and 5x
+      scannerController!.setZoomScale(currentZoomScale);
+      if (context.read<OptionController>().options.first.vibrate!) {
+        Vibration.vibrate(duration: 20); // Subtle feedback on zoom change
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    scannerController?.dispose();
+    controller.dispose();
+    player.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    beep = context.watch<OptionController>().options.first.beep!;
     return Scaffold(
       backgroundColor: widget.colors![0],
       appBar: AppBar(
@@ -399,12 +418,12 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
         title: Text(
           "Scan QR Code",
           style: GoogleFonts.quicksand(
-            color: widget.colors![0],
-            fontWeight: FontWeight.bold
+            color: widget.textColor,
+            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
-           IconButton(
+          IconButton(
             onPressed: () {
               context.read<OptionController>().setCamera();
               scannerController?.switchCamera();
@@ -413,9 +432,9 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
               context.read<OptionController>().options.first.facing == CameraFacing.back
                   ? Icons.flip_camera_ios_outlined
                   : Icons.flip_camera_ios_rounded,
+              color: widget.textColor,
             ),
           ),
-
           IconButton(
             onPressed: () {
               setState(() {
@@ -424,47 +443,119 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
               });
             },
             icon: Icon(
-              !flashEnabled! ?  Icons.flash_off_rounded : Icons.flash_on_rounded
-            )
-          )
+              flashEnabled! ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+              color: widget.textColor,
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              setState(() {
+                showZoomSlider = !showZoomSlider; // Toggle zoom slider visibility
+              });
+            },
+            icon: Icon(
+              Icons.zoom_in_rounded,
+              color: widget.textColor,
+            ),
+          ),
         ],
       ),
-      body: 
-      Stack(
+      body: Stack(
         children: [
-          MobileScanner(
-            controller: scannerController,
-            onDetect: (e) async{
-              context.read<OptionController>().options.first.beep!
-              ? beep()
-              : null;
-              final code = e.barcodes.first;
-              if (code.rawValue != null) {
-                String? value = code.rawValue;
-                process(value!);
-              }
-            },
-          ),
           GestureDetector(
-            // onTap: () => process('test'),
-            child: Opacity(
-              opacity: .5,
-              child: Center(
-                child: LottieBuilder.asset(
-                  'assets/animations/code-scanning.json',
-                  controller: controller,
-                  filterQuality: FilterQuality.high,
-                  onLoaded: (e) {
-                    controller
-                      ..duration = const Duration(seconds: 2)
-                      ..repeat();
-                  }
+            onScaleUpdate: (ScaleUpdateDetails details) {
+              // Handle pinch-to-zoom
+              double newScale = currentZoomScale * details.scale;
+              updateZoomScale(newScale);
+            },
+            child: MobileScanner(
+              controller: scannerController,
+              onDetect: (e) async {
+                if (beep) {
+                  await player.play(AssetSource('audios/beep.mp3'));
+                }
+                final code = e.barcodes.first;
+                if (code.rawValue != null) {
+                  String? value = code.rawValue;
+                  process(value!);
+                }
+              },
+            ),
+          ),
+          Opacity(
+            opacity: 0.5,
+            child: Center(
+              child: LottieBuilder.asset(
+                'assets/animations/code-scanning.json',
+                controller: controller,
+                filterQuality: FilterQuality.high,
+                onLoaded: (e) {
+                  controller
+                    ..duration = const Duration(seconds: 2)
+                    ..repeat();
+                },
+                width: 200 * currentZoomScale, // Scale Lottie animation with zoom
+                height: 200 * currentZoomScale,
+              ),
+            ),
+          ),
+          if (showZoomSlider)
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: widget.colors![0].withOpacity(0.8),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.zoom_out_rounded,
+                      color: widget.textColor,
+                      size: 20,
+                    ),
+                    Expanded(
+                      child: Slider(
+                        value: currentZoomScale,
+                        min: 1.0,
+                        max: 5.0,
+                        divisions: 40,
+                        activeColor: widget.colors![1],
+                        inactiveColor: widget.textColor!.withOpacity(0.5),
+                        onChanged: (value) {
+                          updateZoomScale(value);
+                        },
+                      ),
+                    ),
+                    Icon(
+                      Icons.zoom_in_rounded,
+                      color: widget.textColor,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      '${currentZoomScale.toStringAsFixed(1)}x',
+                      style: GoogleFonts.quicksand(
+                        color: widget.textColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          )
         ],
-      )
+      ),
     );
   }
 }

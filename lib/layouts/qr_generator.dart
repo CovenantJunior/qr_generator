@@ -178,11 +178,7 @@ class _QRGeneratorState extends State<QRGenerator> {
         width: 100,
         child: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [widget.colors![1], widget.colors![0]],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(15),
             boxShadow: const [
               BoxShadow(
@@ -201,7 +197,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                     Icon(
                       icon,
                       size: 30,
-                      color: isPremium ? Colors.white : widget.textColor,
+                      color: Colors.black
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -209,19 +205,19 @@ class _QRGeneratorState extends State<QRGenerator> {
                       style: GoogleFonts.quicksand(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: isPremium ? Colors.white : widget.textColor,
+                        color: Colors.black
                       ),
                     ),
                   ],
                 ),
               ),
               if (isPremium)
-                Positioned(
+                const Positioned(
                   top: 8,
                   right: 3,
                   child: Icon(
                     Icons.movie_filter_outlined,
-                    color: Colors.yellow[300],
+                    color: Colors.black,
                     size: 20,
                   ),
                 ),

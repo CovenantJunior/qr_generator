@@ -46,7 +46,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    requestPermissions();
+    // requestPermissions();
   }
   
   @override
