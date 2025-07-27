@@ -404,19 +404,15 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           ),
         ),
         actions: [
-           context.read<OptionController>().options.first.facing == CameraFacing.back ? IconButton(
+           IconButton(
             onPressed: () {
               context.read<OptionController>().setCamera();
+              scannerController?.switchCamera();
             },
-            icon: const Icon(
-              Icons.flip_camera_ios_outlined
-            ),
-          ) : IconButton(
-            onPressed: () {
-              context.read<OptionController>().setCamera();
-            },
-            icon: const Icon(
-              Icons.flip_camera_ios_rounded
+            icon: Icon(
+              context.read<OptionController>().options.first.facing == CameraFacing.back
+                  ? Icons.flip_camera_ios_outlined
+                  : Icons.flip_camera_ios_rounded,
             ),
           ),
 
