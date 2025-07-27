@@ -389,10 +389,10 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
 
   void updateZoomScale(double scale) {
     setState(() {
-      currentZoomScale = scale.clamp(1.0, 5.0); // Limit zoom between 1x and 5x
+      currentZoomScale = scale.clamp(0.0, 1.0);
       scannerController!.setZoomScale(currentZoomScale);
       if (context.read<OptionController>().options.first.vibrate!) {
-        Vibration.vibrate(duration: 20); // Subtle feedback on zoom change
+        Vibration.vibrate(duration: 20);
       }
     });
   }
@@ -494,8 +494,6 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                     ..duration = const Duration(seconds: 2)
                     ..repeat();
                 },
-                width: 200 * currentZoomScale, // Scale Lottie animation with zoom
-                height: 200 * currentZoomScale,
               ),
             ),
           ),

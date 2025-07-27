@@ -29,7 +29,7 @@ class OptionController extends ChangeNotifier{
         ..facing = CameraFacing.back
         ..flash = false
         ..qrSize = 200
-        ..qrTransparent = true
+        ..qrTransparent = false
         ..theme = 1;
       await isar.writeTxn(() => isar.options.put(newPreference));
     }
