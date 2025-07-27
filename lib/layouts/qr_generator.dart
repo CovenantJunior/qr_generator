@@ -28,7 +28,7 @@ class QRGenerator extends StatefulWidget {
 }
 
 String data = "";
-String selectedTyped = "text";
+String selectedTyped = "";
 TextEditingController? textEditingController;
 ScreenshotController screenshotController = ScreenshotController();
 final Map<String, TextEditingController> controllers = {
@@ -384,15 +384,6 @@ class _QRGeneratorState extends State<QRGenerator> {
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: GoogleFonts.quicksand(color: widget.textColor),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -493,15 +484,6 @@ class _QRGeneratorState extends State<QRGenerator> {
             ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              "Cancel",
-              style: GoogleFonts.quicksand(color: widget.textColor),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -581,9 +563,6 @@ class _QRGeneratorState extends State<QRGenerator> {
           duration: const Duration(seconds: 3),
         ),
       );
-
-      // Close the dialog
-      Navigator.pop(context);
     } catch (e) {
       debugPrint('Error saving QR code: $e');
       ScaffoldMessenger.of(context).showSnackBar(
