@@ -26,6 +26,7 @@ class _HomeState extends State<Home> {
     // Request the necessary permissions
     Map<Permission, PermissionStatus> statuses = await [
       Permission.camera,
+      Permission.storage
       // Add other permissions you need here
     ].request();
 

@@ -4,12 +4,14 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qr_generator/ads/rewarded.dart';
 import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:image/image.dart' as img;
 
 class QRGenerator extends StatefulWidget {
   final List<Color>? colors;
@@ -61,58 +63,57 @@ class _QRGeneratorState extends State<QRGenerator> {
   }
 
   String generatedData() {
-  switch (selectedTyped) {
-    case 'contact':
-      return """BEGIN:VCARD
-VERSION:3.0
-FN:${controllers['name']?.text}
-TEL:${controllers['phone']?.text}
-EMAIL:${controllers['email']?.text}
-END:VCARD""";
-    case 'url':
-      String url = controllers['url']!.text;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        url = "https://$url";
-      }
-      return url;
-    case 'wifi':
-      String ssid = controllers['wifi_ssid']!.text;
-      String password = controllers['wifi_password']!.text;
-      return "WIFI:S:$ssid;P:$password;T:WPA;;";
-    case 'email':
-      String email = controllers['email']!.text;
-      String subject = controllers['email_subject']!.text;
-      String body = controllers['email_body']!.text;
-      return "mailto:$email?subject=$subject&body=$body";
-    case 'sms':
-      String phone = controllers['sms_phone']!.text;
-      String message = controllers['sms_message']!.text;
-      return "SMSTO:$phone:$message";
-    case 'phone_call':
-      return "tel:${controllers['phone_call']!.text}";
-    case 'geo':
-      String latitude = controllers['geo_latitude']!.text;
-      String longitude = controllers['geo_longitude']!.text;
-      return "geo:$latitude,$longitude";
-    case 'event':
-      String title = controllers['event_title']!.text;
-      String description = controllers['event_description']!.text;
-      String start = controllers['event_start']!.text.replaceAll(RegExp(r'[^0-9]'), '');
-      String end = controllers['event_end']!.text.replaceAll(RegExp(r'[^0-9]'), '');
-      return """BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:$title
-DESCRIPTION:$description
-DTSTART:$start
-DTEND:$end
-END:VEVENT
-END:VCALENDAR""";
-    default:
-      return textEditingController?.text ?? '';
+    switch (selectedTyped) {
+      case 'contact':
+        return """BEGIN:VCARD
+  VERSION:3.0
+  FN:${controllers['name']?.text}
+  TEL:${controllers['phone']?.text}
+  EMAIL:${controllers['email']?.text}
+  END:VCARD""";
+      case 'url':
+        String url = controllers['url']!.text;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = "https://$url";
+        }
+        return url;
+      case 'wifi':
+        String ssid = controllers['wifi_ssid']!.text;
+        String password = controllers['wifi_password']!.text;
+        return "WIFI:S:$ssid;P:$password;T:WPA;;";
+      case 'email':
+        String email = controllers['email']!.text;
+        String subject = controllers['email_subject']!.text;
+        String body = controllers['email_body']!.text;
+        return "mailto:$email?subject=$subject&body=$body";
+      case 'sms':
+        String phone = controllers['sms_phone']!.text;
+        String message = controllers['sms_message']!.text;
+        return "SMSTO:$phone:$message";
+      case 'phone_call':
+        return "tel:${controllers['phone_call']!.text}";
+      case 'geo':
+        String latitude = controllers['geo_latitude']!.text;
+        String longitude = controllers['geo_longitude']!.text;
+        return "geo:$latitude,$longitude";
+      case 'event':
+        String title = controllers['event_title']!.text;
+        String description = controllers['event_description']!.text;
+        String start = controllers['event_start']!.text.replaceAll(RegExp(r'[^0-9]'), '');
+        String end = controllers['event_end']!.text.replaceAll(RegExp(r'[^0-9]'), '');
+        return """BEGIN:VCALENDAR
+  VERSION:2.0
+  BEGIN:VEVENT
+  SUMMARY:$title
+  DESCRIPTION:$description
+  DTSTART:$start
+  DTEND:$end
+  END:VEVENT
+  END:VCALENDAR""";
+      default:
+        return textEditingController?.text ?? '';
+    }
   }
-}
-
 
   String generateRandomText() {
     final random = Random();
@@ -120,21 +121,56 @@ END:VCALENDAR""";
     return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
+  Future<void> requestPermissions() async {
+
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.storage,
+    ].request();
+
+    if (statuses.containsValue(PermissionStatus.denied)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Storage permission is required to download images.',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Quicksand',
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+  }
+
   Widget buildFormatButton({
     required String format,
     required String label,
     required bool isPremium,
     required IconData icon,
+    required String action
   }) {
     return GestureDetector(
       onTap: () async {
         if (isPremium) {
           bool shown = await _rewardedAdService.showRewardedAd(context);
           if (shown) {
-            shareQR(format);
+            if (action == 'share') {
+              shareQR(format);
+            } else if (action == 'save') {
+              saveQR(format);
+            }
           }
         } else {
-          shareQR(format);
+          if (action == 'share') {
+            shareQR(format);
+          } else if (action == 'save') {
+            saveQR(format);
+          }
         }
       },
       child: SizedBox(
@@ -252,13 +288,13 @@ END:VCALENDAR""";
     );
   }
 
-  void showFormatSelectionDialog() {
+  void showSaveFormatSelectionDialog() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
-          "Select Image Format",
+          "Save in Image Format",
           style: GoogleFonts.quicksand(
             fontWeight: FontWeight.bold,
             color: widget.colors![1],
@@ -279,6 +315,7 @@ END:VCALENDAR""";
                 label: 'JPG',
                 isPremium: false,
                 icon: Icons.image,
+                action: 'save'
               ),
               // PNG (Premium)
               buildFormatButton(
@@ -286,6 +323,7 @@ END:VCALENDAR""";
                 label: 'PNG',
                 isPremium: true,
                 icon: Icons.image_outlined,
+                action: 'save'
               ),
               // SVG (Premium)
               buildFormatButton(
@@ -293,6 +331,7 @@ END:VCALENDAR""";
                 label: 'SVG',
                 isPremium: true,
                 icon: Icons.polyline,
+                action: 'save'
               ),
               // WEBP (Premium)
               buildFormatButton(
@@ -300,6 +339,7 @@ END:VCALENDAR""";
                 label: 'WEBP',
                 isPremium: true,
                 icon: Icons.image_aspect_ratio,
+                action: 'save'
               ),
               // GIF (Premium)
               buildFormatButton(
@@ -307,6 +347,7 @@ END:VCALENDAR""";
                 label: 'GIF',
                 isPremium: true,
                 icon: Icons.gif,
+                action: 'save'
               ),
               // TIFF (Premium)
               buildFormatButton(
@@ -314,6 +355,7 @@ END:VCALENDAR""";
                 label: 'TIFF',
                 isPremium: true,
                 icon: Icons.image_search,
+                action: 'save'
               ),
               // EPS (Premium)
               buildFormatButton(
@@ -321,6 +363,7 @@ END:VCALENDAR""";
                 label: 'EPS',
                 isPremium: true,
                 icon: Icons.layers_rounded,
+                action: 'save'
               ),
               // HEIF (Premium)
               buildFormatButton(
@@ -328,6 +371,7 @@ END:VCALENDAR""";
                 label: 'HEIF',
                 isPremium: true,
                 icon: Icons.image_rounded,
+                action: 'save'
               ),
               // AVIF (Premium)
               buildFormatButton(
@@ -335,6 +379,7 @@ END:VCALENDAR""";
                 label: 'AVIF',
                 isPremium: true,
                 icon: Icons.compass_calibration,
+                action: 'save'
               ),
             ],
           ),
@@ -350,6 +395,213 @@ END:VCALENDAR""";
         ],
       ),
     );
+  }
+  
+  void showShareFormatSelectionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          "Share in Image Format",
+          style: GoogleFonts.quicksand(
+            fontWeight: FontWeight.bold,
+            color: widget.colors![1],
+          ),
+          textAlign: TextAlign.center,
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: GridView.count(
+            shrinkWrap: true,
+            crossAxisCount: 3,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
+            children: [
+              // JPG (Free)
+              buildFormatButton(
+                format: 'jpg',
+                label: 'JPG',
+                isPremium: false,
+                icon: Icons.image,
+                action: 'share'
+              ),
+              // PNG (Premium)
+              buildFormatButton(
+                format: 'png',
+                label: 'PNG',
+                isPremium: true,
+                icon: Icons.image_outlined,
+                action: 'share'
+              ),
+              // SVG (Premium)
+              buildFormatButton(
+                format: 'svg',
+                label: 'SVG',
+                isPremium: true,
+                icon: Icons.polyline,
+                action: 'share'
+              ),
+              // WEBP (Premium)
+              buildFormatButton(
+                format: 'webp',
+                label: 'WEBP',
+                isPremium: true,
+                icon: Icons.image_aspect_ratio,
+                action: 'share'
+              ),
+              // GIF (Premium)
+              buildFormatButton(
+                format: 'gif',
+                label: 'GIF',
+                isPremium: true,
+                icon: Icons.gif,
+                action: 'share'
+              ),
+              // TIFF (Premium)
+              buildFormatButton(
+                format: 'tiff',
+                label: 'TIFF',
+                isPremium: true,
+                icon: Icons.image_search,
+                action: 'share'
+              ),
+              // EPS (Premium)
+              buildFormatButton(
+                format: 'eps',
+                label: 'EPS',
+                isPremium: true,
+                icon: Icons.layers_rounded,
+                action: 'share'
+              ),
+              // HEIF (Premium)
+              buildFormatButton(
+                format: 'heif',
+                label: 'HEIF',
+                isPremium: true,
+                icon: Icons.image_rounded,
+                action: 'share'
+              ),
+              // AVIF (Premium)
+              buildFormatButton(
+                format: 'avif',
+                label: 'AVIF',
+                isPremium: true,
+                icon: Icons.compass_calibration,
+                action: 'share'
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              "Cancel",
+              style: GoogleFonts.quicksand(color: widget.textColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> saveQR(String format) async {
+    try {
+      // Request storage permissions
+      await requestPermissions();
+
+      // Capture QR code image
+      final capture = await screenshotController.capture();
+      if (capture == null) {
+        throw Exception('Failed to capture QR code image');
+      }
+
+      // Get downloads directory
+      final directory = await getDownloadsDirectory();
+      if (directory == null) {
+        throw Exception('Unable to access downloads directory');
+      }
+
+      // Create Perzsi directory
+      final dir = Directory('${directory.path}/QR Code Generator');
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+
+      // Generate a random filename
+      String filename = generateRandomText();
+      final filePath = '${dir.path}/$filename.$format';
+      File file = File(filePath);
+
+      // Save the image based on format
+      if (format == 'png') {
+        await file.writeAsBytes(capture);
+      } else if (format == 'jpg') {
+        // Convert to JPG using the image package
+        final image = img.decodeImage(capture);
+        if (image == null) {
+          throw Exception('Failed to decode captured image');
+        }
+        final jpgBytes = img.encodeJpg(image, quality: 80);
+        await file.writeAsBytes(jpgBytes);
+      } else {
+        // Placeholder for unsupported formats (SVG, EPS, etc.)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Format $format is not supported yet.',
+              style: const TextStyle(
+                fontSize: 14,
+                fontFamily: 'Quicksand',
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'QR code saved successfully as "$format"',
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'Quicksand',
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+
+      // Close the dialog
+      Navigator.pop(context);
+    } catch (e) {
+      debugPrint('Error saving QR code: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to save QR code: $e',
+            style: const TextStyle(
+              fontSize: 14,
+              fontFamily: 'Quicksand',
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void shareQR(String format) async {
@@ -603,14 +855,42 @@ END:VCALENDAR""";
               ),
               const SizedBox(height: 15),
               if (data.isNotEmpty)
-                ElevatedButton.icon(
-                  onPressed: showFormatSelectionDialog,
-                  label: const Text('Share Code'),
-                  icon: Icon(
-                    Icons.share,
-                    color: widget.colors![1],
-                  ),
-                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: showSaveFormatSelectionDialog,
+                      label: const Text(
+                        'Save Code',
+                        style: TextStyle(
+                          fontFamily: 'Quicksand',
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      icon: Icon(
+                        Icons.save_alt_rounded,
+                        color: widget.colors![1],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: showShareFormatSelectionDialog,
+                      label: const Text(
+                        'Share Code',
+                        style: TextStyle(
+                          fontFamily: 'Quicksand',
+                          fontWeight: FontWeight.bold
+                        ),
+                      ),
+                      icon: Icon(
+                        Icons.share,
+                        color: widget.colors![1],
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
