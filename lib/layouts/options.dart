@@ -246,7 +246,7 @@ class _OptionsState extends State<Options> {
                         id: 9,
                         title: "Remove Ads",
                         icon: Icons.movie_filter_outlined,
-                        enabled: true,
+                        enabled: false,
                         colors: widget.colors,
                         textColor: widget.textColor
                       ),

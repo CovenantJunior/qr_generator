@@ -12,10 +12,14 @@ import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 
 class QRGenerator extends StatefulWidget {
-  List<Color>? colors;
-  Color? textColor;
+  final List<Color>? colors;
+  final Color? textColor;
 
-  QRGenerator({super.key, required this.colors, required this.textColor});
+  const QRGenerator({
+    super.key,
+    required this.colors,
+    required this.textColor,
+  });
 
   @override
   State<QRGenerator> createState() => _QRGeneratorState();
@@ -29,45 +33,91 @@ final Map<String, TextEditingController> controllers = {
   "name": TextEditingController(),
   "phone": TextEditingController(),
   "email": TextEditingController(),
-  "url": TextEditingController()
+  "url": TextEditingController(),
+  "wifi_ssid": TextEditingController(),
+  "wifi_password": TextEditingController(),
+  "email_subject": TextEditingController(),
+  "email_body": TextEditingController(),
+  "sms_phone": TextEditingController(),
+  "sms_message": TextEditingController(),
+  "phone_call": TextEditingController(),
+  "geo_latitude": TextEditingController(),
+  "geo_longitude": TextEditingController(),
+  "event_title": TextEditingController(),
+  "event_description": TextEditingController(),
+  "event_start": TextEditingController(),
+  "event_end": TextEditingController(),
 };
 
 class _QRGeneratorState extends State<QRGenerator> {
-
   late RewardedAds _rewardedAdService;
 
   @override
   void initState() {
     super.initState();
+    textEditingController = TextEditingController();
     _rewardedAdService = RewardedAds();
     _rewardedAdService.loadRewardedAd();
   }
 
   String generatedData() {
-    switch (selectedTyped) {
-      case 'contact':
-        return """BEGIN:VCARD
-          VERSION:3.0
-          FN:${controllers['name']?.text}
-          TEL:${controllers['phone']?.text}
-          EMAIL:${controllers['email']?.text}
-          END:VCARD""";
-      case 'url':
-        String url = controllers['url']!.text;
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          url = "https://$url";
-        }
-        return url;
-      default:
-        return textEditingController!.text;
-    }
+  switch (selectedTyped) {
+    case 'contact':
+      return """BEGIN:VCARD
+VERSION:3.0
+FN:${controllers['name']?.text}
+TEL:${controllers['phone']?.text}
+EMAIL:${controllers['email']?.text}
+END:VCARD""";
+    case 'url':
+      String url = controllers['url']!.text;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = "https://$url";
+      }
+      return url;
+    case 'wifi':
+      String ssid = controllers['wifi_ssid']!.text;
+      String password = controllers['wifi_password']!.text;
+      return "WIFI:S:$ssid;P:$password;T:WPA;;";
+    case 'email':
+      String email = controllers['email']!.text;
+      String subject = controllers['email_subject']!.text;
+      String body = controllers['email_body']!.text;
+      return "mailto:$email?subject=$subject&body=$body";
+    case 'sms':
+      String phone = controllers['sms_phone']!.text;
+      String message = controllers['sms_message']!.text;
+      return "SMSTO:$phone:$message";
+    case 'phone_call':
+      return "tel:${controllers['phone_call']!.text}";
+    case 'geo':
+      String latitude = controllers['geo_latitude']!.text;
+      String longitude = controllers['geo_longitude']!.text;
+      return "geo:$latitude,$longitude";
+    case 'event':
+      String title = controllers['event_title']!.text;
+      String description = controllers['event_description']!.text;
+      String start = controllers['event_start']!.text.replaceAll(RegExp(r'[^0-9]'), '');
+      String end = controllers['event_end']!.text.replaceAll(RegExp(r'[^0-9]'), '');
+      return """BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:$title
+DESCRIPTION:$description
+DTSTART:$start
+DTEND:$end
+END:VEVENT
+END:VCALENDAR""";
+    default:
+      return textEditingController?.text ?? '';
   }
+}
+
 
   String generateRandomText() {
     final random = Random();
-    const chars = 'abcdefghijklmnopqrstuvwxyz';
-    return List.generate(10, (index) => chars[random.nextInt(chars.length)])
-        .join();
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return List.generate(10, (index) => chars[random.nextInt(chars.length)]).join();
   }
 
   Widget buildFormatButton({
@@ -87,58 +137,116 @@ class _QRGeneratorState extends State<QRGenerator> {
           shareQR(format);
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: isPremium
-                ? [widget.colors![1], widget.colors![0]]
-                : [Colors.grey.shade300, Colors.grey.shade100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, 4),
+      child: SizedBox(
+        height: 100,
+        width: 100,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [widget.colors![1], widget.colors![0]],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
-          ],
-        ),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    icon,
-                    size: 40,
-                    color: isPremium ? Colors.white : widget.textColor,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    label,
-                    style: GoogleFonts.quicksand(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      icon,
+                      size: 30,
                       color: isPremium ? Colors.white : widget.textColor,
                     ),
-                  ),
-                ],
-              ),
-            ),
-            if (isPremium)
-              const Positioned(
-                top: 8,
-                right: 8,
-                child: Icon(
-                  Icons.lock,
-                  color: Colors.yellowAccent,
-                  size: 20,
+                    const SizedBox(height: 8),
+                    Text(
+                      label,
+                      style: GoogleFonts.quicksand(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isPremium ? Colors.white : widget.textColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-          ],
+              if (isPremium)
+                Positioned(
+                  top: 8,
+                  right: 3,
+                  child: Icon(
+                    Icons.movie_filter_outlined,
+                    color: Colors.yellow[300],
+                    size: 20,
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildTypeButton({
+    required String type,
+    required String label,
+    required IconData icon,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedTyped = type;
+          data = '';
+          controllers.forEach((_, controller) => controller.clear());
+          textEditingController?.clear();
+        });
+      },
+      child: SizedBox(
+        height: 100,
+        width: 100,
+        child: Container(
+          decoration: BoxDecoration(
+            color: selectedTyped == type ? Colors.grey[200] : widget.textColor,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: const [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  size: 30,
+                  color: widget.colors![1],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  label,
+                  style: GoogleFonts.quicksand(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: widget.colors![0],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -153,17 +261,17 @@ class _QRGeneratorState extends State<QRGenerator> {
           "Select Image Format",
           style: GoogleFonts.quicksand(
             fontWeight: FontWeight.bold,
-            color: widget.textColor,
+            color: widget.colors![1],
           ),
+          textAlign: TextAlign.center,
         ),
         content: SizedBox(
           width: double.maxFinite,
           child: GridView.count(
             shrinkWrap: true,
-            crossAxisCount: 2,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            padding: const EdgeInsets.all(10),
+            crossAxisCount: 3,
+            crossAxisSpacing: 15,
+            mainAxisSpacing: 15,
             children: [
               // JPG (Free)
               buildFormatButton(
@@ -185,6 +293,48 @@ class _QRGeneratorState extends State<QRGenerator> {
                 label: 'SVG',
                 isPremium: true,
                 icon: Icons.polyline,
+              ),
+              // WEBP (Premium)
+              buildFormatButton(
+                format: 'webp',
+                label: 'WEBP',
+                isPremium: true,
+                icon: Icons.image_aspect_ratio,
+              ),
+              // GIF (Premium)
+              buildFormatButton(
+                format: 'gif',
+                label: 'GIF',
+                isPremium: true,
+                icon: Icons.gif,
+              ),
+              // TIFF (Premium)
+              buildFormatButton(
+                format: 'tiff',
+                label: 'TIFF',
+                isPremium: true,
+                icon: Icons.image_search,
+              ),
+              // EPS (Premium)
+              buildFormatButton(
+                format: 'eps',
+                label: 'EPS',
+                isPremium: true,
+                icon: Icons.layers_rounded,
+              ),
+              // HEIF (Premium)
+              buildFormatButton(
+                format: 'heif',
+                label: 'HEIF',
+                isPremium: true,
+                icon: Icons.image_rounded,
+              ),
+              // AVIF (Premium)
+              buildFormatButton(
+                format: 'avif',
+                label: 'AVIF',
+                isPremium: true,
+                icon: Icons.compass_calibration,
               ),
             ],
           ),
@@ -213,9 +363,9 @@ class _QRGeneratorState extends State<QRGenerator> {
     await Share.shareXFiles([XFile(imagePath)], text: "QR Code");
   }
 
-  Widget buildText(TextEditingController? controller, String label) {
+  Widget buildText(TextEditingController? controller, String label, {bool isNumeric = false}) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(10.0),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
@@ -224,8 +374,13 @@ class _QRGeneratorState extends State<QRGenerator> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+        keyboardType: isNumeric ? TextInputType.number : TextInputType.text,
         onChanged: (e) => setState(() {
-          data = generatedData();
+          if (e.isEmpty) {
+            data = '';
+          } else {
+            data = generatedData();
+          }
         }),
       ),
     );
@@ -237,12 +392,52 @@ class _QRGeneratorState extends State<QRGenerator> {
         return Column(
           children: [
             buildText(controllers['name'], 'Name'),
-            buildText(controllers['phone'], 'Phone'),
+            buildText(controllers['phone'], 'Phone', isNumeric: true),
             buildText(controllers['email'], 'Email'),
           ],
         );
       case 'url':
         return buildText(controllers['url'], 'URL');
+      case 'wifi':
+        return Column(
+          children: [
+            buildText(controllers['wifi_ssid'], 'WiFi SSID'),
+            buildText(controllers['wifi_password'], 'WiFi Password'),
+          ],
+        );
+      case 'email':
+        return Column(
+          children: [
+            buildText(controllers['email'], 'Email Address'),
+            buildText(controllers['email_subject'], 'Subject'),
+            buildText(controllers['email_body'], 'Body'),
+          ],
+        );
+      case 'sms':
+        return Column(
+          children: [
+            buildText(controllers['sms_phone'], 'Phone Number', isNumeric: true),
+            buildText(controllers['sms_message'], 'Message'),
+          ],
+        );
+      case 'phone_call':
+        return buildText(controllers['phone_call'], 'Phone Number', isNumeric: true);
+      case 'geo':
+        return Column(
+          children: [
+            buildText(controllers['geo_latitude'], 'Latitude', isNumeric: true),
+            buildText(controllers['geo_longitude'], 'Longitude', isNumeric: true),
+          ],
+        );
+      case 'event':
+        return Column(
+          children: [
+            buildText(controllers['event_title'], 'Event Title'),
+            buildText(controllers['event_description'], 'Description'),
+            buildText(controllers['event_start'], 'Start Date (YYYYMMDDTHHMMSS)'),
+            buildText(controllers['event_end'], 'End Date (YYYYMMDDTHHMMSS)'),
+          ],
+        );
       default:
         return Padding(
           padding: const EdgeInsets.all(10.0),
@@ -267,6 +462,7 @@ class _QRGeneratorState extends State<QRGenerator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: widget.colors![0],
       appBar: AppBar(
         elevation: 0,
@@ -291,91 +487,120 @@ class _QRGeneratorState extends State<QRGenerator> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8.0, vertical: 5.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 15.0),
                     child: Column(
                       children: [
-                        SegmentedButton<String>(
-                          segments: [
-                            ButtonSegment(
-                              enabled: true,
-                              value: 'text',
-                              label: const Text('Text'),
-                              icon: Icon(
-                                Icons.text_fields_rounded,
-                                color: widget.colors![1],
-                              ),
-                            ),
-                            ButtonSegment(
-                              value: 'url',
-                              label: const Text('URL'),
-                              icon: Icon(
-                                Icons.link_rounded,
-                                color: widget.colors![1],
-                              ),
-                            ),
-                            ButtonSegment(
-                              value: 'contact',
-                              label: const Text('Contact'),
-                              icon: Icon(
-                                Icons.contact_page_rounded,
-                                color: widget.colors![1],
-                              ),
-                            ),
-                          ],
-                          selected: {selectedTyped},
-                          onSelectionChanged: (Set<String> selected) {
-                            setState(() {
-                              selectedTyped = selected.first;
-                              data = '';
-                            });
-                          },
+                        Text(
+                          "Select QR Code Type",
+                          style: GoogleFonts.quicksand(
+                            fontWeight: FontWeight.bold,
+                            color: widget.colors![1],
+                            fontSize: 16,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 10),
+                        data.isNotEmpty
+                            ? Container(
+                              decoration: const BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: SizedBox(
+                                    height: context.read<OptionController>().options.first.qrSize!.toDouble(),
+                                    child: Screenshot(
+                                      controller: screenshotController,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: context.read<OptionController>().options.first.qrTransparent! ? Colors.transparent : Colors.white,
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        child: QrImageView(
+                                          data: data,
+                                          backgroundColor: context.read<OptionController>().options.first.qrTransparent! ? Colors.transparent : Colors.white,
+                                          version: QrVersions.auto,
+                                          size: context
+                                              .read<OptionController>()
+                                              .options
+                                              .first
+                                              .qrSize!
+                                              .toDouble(),
+                                          errorCorrectionLevel: QrErrorCorrectLevel.H,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ),
+                            )
+                            : GridView.count(
+                                shrinkWrap: true,
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 15,
+                                mainAxisSpacing: 15,
+                                padding: const EdgeInsets.all(10),
+                                physics: const NeverScrollableScrollPhysics(),
+                                children: [
+                                  buildTypeButton(
+                                    type: 'text',
+                                    label: 'Text',
+                                    icon: Icons.text_fields_rounded,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'url',
+                                    label: 'URL',
+                                    icon: Icons.link_rounded,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'contact',
+                                    label: 'Contact',
+                                    icon: Icons.contact_page_rounded,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'wifi',
+                                    label: 'WiFi',
+                                    icon: Icons.wifi,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'email',
+                                    label: 'Email',
+                                    icon: Icons.email,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'sms',
+                                    label: 'SMS',
+                                    icon: Icons.sms,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'phone_call',
+                                    label: 'Phone',
+                                    icon: Icons.phone,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'geo',
+                                    label: 'Geo',
+                                    icon: Icons.location_on,
+                                  ),
+                                  buildTypeButton(
+                                    type: 'event',
+                                    label: 'Event',
+                                    icon: Icons.event,
+                                  ),
+                                ],
+                              ),
+                        const SizedBox(height: 10),
                         inputFields(selectedTyped),
                       ],
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 15),
-              if (data.isNotEmpty)
-                Column(
-                  children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Screenshot(
-                              controller: screenshotController,
-                              child: QrImageView(
-                                data: data,
-                                backgroundColor: context
-                                        .read<OptionController>()
-                                        .options
-                                        .first
-                                        .qrTransparent!
-                                    ? Colors.transparent
-                                    : Colors.white,
-                                version: QrVersions.auto,
-                                size: context
-                                    .read<OptionController>()
-                                    .options
-                                    .first
-                                    .qrSize!
-                                    .toDouble(),
-                                errorCorrectionLevel: QrErrorCorrectLevel.H,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
               const SizedBox(height: 15),
               if (data.isNotEmpty)
                 ElevatedButton.icon(
