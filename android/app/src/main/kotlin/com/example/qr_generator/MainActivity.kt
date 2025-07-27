@@ -1,4 +1,4 @@
-package com.example.qr_generator
+package com.teapotlab.qr_generator
 
 import io.flutter.embedding.android.FlutterActivity
 
