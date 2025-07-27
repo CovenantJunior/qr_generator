@@ -250,11 +250,11 @@ class _OptionsState extends State<Options> {
                         colors: widget.colors,
                         textColor: widget.textColor
                       ),
-                      Positioned(
+                      const Positioned(
                         right: 0,
                         child: Icon(
                           Icons.workspace_premium_outlined,
-                          color: widget.textColor,
+                          color: Colors.blueGrey,
                           size: 30,
                         ),
                       )
