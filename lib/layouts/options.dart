@@ -266,7 +266,7 @@ class _OptionsState extends State<Options> {
                         right: 0,
                         child: Icon(
                           Icons.workspace_premium_outlined,
-                          color: Colors.blueGrey,
+                          color: Colors.grey,
                           size: 30,
                         ),
                       )

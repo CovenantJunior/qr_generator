@@ -414,14 +414,6 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
         elevation: 0,
         backgroundColor: widget.colors![0],
         foregroundColor: widget.textColor,
-        centerTitle: true,
-        title: Text(
-          "Scan QR Code",
-          style: GoogleFonts.quicksand(
-            color: widget.textColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         actions: [
           IconButton(
             onPressed: () {

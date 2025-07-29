@@ -180,11 +180,11 @@ class _QRGeneratorState extends State<QRGenerator> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Colors.black26,
+                color: widget.colors![1],
                 blurRadius: 8,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -247,15 +247,18 @@ class _QRGeneratorState extends State<QRGenerator> {
         width: 100,
         child: Container(
           decoration: BoxDecoration(
-            color: selectedTyped == type ? Colors.grey[200] : widget.textColor,
+            color: widget.colors![0],
             borderRadius: BorderRadius.circular(15),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: Colors.black26,
+                color: widget.colors![1],
                 blurRadius: 8,
-                offset: Offset(0, 4),
+                offset: const Offset(0, 4),
               ),
             ],
+            border: Border.all(
+              width: selectedTyped == type ? 1 : .1
+            )
           ),
           child: Center(
             child: Column(
@@ -264,7 +267,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                 Icon(
                   icon,
                   size: 30,
-                  color: widget.colors![1],
+                  color: widget.textColor
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -272,7 +275,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                   style: GoogleFonts.quicksand(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: widget.colors![0],
+                    color: widget.textColor,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -721,7 +724,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                           "Select QR Code Type",
                           style: GoogleFonts.quicksand(
                             fontWeight: FontWeight.bold,
-                            color: widget.colors![1],
+                            color: widget.textColor,
                             fontSize: 16,
                           ),
                           textAlign: TextAlign.center,
@@ -729,12 +732,12 @@ class _QRGeneratorState extends State<QRGenerator> {
                         const SizedBox(height: 10),
                         data.isNotEmpty
                             ? Container(
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black26,
+                                    color: widget.colors![1],
                                     blurRadius: 8,
-                                    offset: Offset(0, 4),
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),

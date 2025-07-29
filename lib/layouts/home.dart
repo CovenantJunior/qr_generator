@@ -92,7 +92,7 @@ class _HomeState extends State<Home> {
                           BoxShadow(
                             // blurRadius: 5,
                             spreadRadius: 5,
-                            color: widget.textColor!
+                            color: widget.colors![1]
                           )
                         ]
                       ),
