@@ -43,7 +43,7 @@ class Shell extends StatelessWidget {
                   color: textColor
                 )
               ),
-              backgroundColor: Colors.white,
+              backgroundColor: colors[1],
               duration: const Duration(seconds: 3)
             ),
           );
