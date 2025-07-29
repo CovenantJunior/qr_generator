@@ -137,7 +137,6 @@ class _OptionsState extends State<Options> {
         title: const Text(
           "Settings",
           style: TextStyle(
-            color: Colors.white,
             fontFamily: 'Quicksand',
             fontWeight: FontWeight.bold
           ),

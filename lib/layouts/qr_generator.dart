@@ -187,6 +187,9 @@ class _QRGeneratorState extends State<QRGenerator> {
                 offset: const Offset(0, 4),
               ),
             ],
+            border: Border.all(
+              width: .1
+            )
           ),
           child: Stack(
             children: [
@@ -396,7 +399,7 @@ class _QRGeneratorState extends State<QRGenerator> {
           "Share in Image Format",
           style: GoogleFonts.quicksand(
             fontWeight: FontWeight.bold,
-            color: widget.colors![1],
+            color: widget.textColor,
           ),
           textAlign: TextAlign.center,
         ),
@@ -838,16 +841,17 @@ class _QRGeneratorState extends State<QRGenerator> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: showSaveFormatSelectionDialog,
-                      label: const Text(
+                      label: Text(
                         'Save Code',
                         style: TextStyle(
                           fontFamily: 'Quicksand',
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
+                          color: widget.textColor,
                         ),
                       ),
                       icon: Icon(
                         Icons.save_alt_rounded,
-                        color: widget.colors![1],
+                        color: widget.textColor,
                       ),
                     ),
                     const SizedBox(
@@ -855,16 +859,17 @@ class _QRGeneratorState extends State<QRGenerator> {
                     ),
                     ElevatedButton.icon(
                       onPressed: showShareFormatSelectionDialog,
-                      label: const Text(
+                      label: Text(
                         'Share Code',
                         style: TextStyle(
                           fontFamily: 'Quicksand',
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
+                          color: widget.textColor,
                         ),
                       ),
                       icon: Icon(
                         Icons.share,
-                        color: widget.colors![1],
+                        color: widget.textColor,
                       ),
                     ),
                 ],

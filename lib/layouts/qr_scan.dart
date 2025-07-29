@@ -14,8 +14,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
-
-
 class QRScan extends StatefulWidget {
   final List<Color>? colors;
   final Color? textColor;
@@ -38,7 +36,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
   bool beep = true;
   final player = AudioPlayer();
   bool showZoomSlider = false; // Toggle for zoom slider visibility
-  double currentZoomScale = 1.0; // Track current zoom level
+  double currentZoomScale = 1.0; // Display range: 1.0 to 5.0
 
   Future<void> requestPermissions() async {
     Map<Permission, PermissionStatus> statuses = await [
@@ -67,7 +65,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
       detectionSpeed: context.read<OptionController>().options.first.detectionSpeed,
       facing: context.read<OptionController>().options.first.facing,
     );
-    scannerController!.setZoomScale(currentZoomScale); // Set initial zoom
+    scannerController!.setZoomScale((currentZoomScale - 1.0) / 4.0); // Map 1.0-5.0 to 0.0-1.0
     Future.delayed(const Duration(milliseconds: 2000), () {
       if (context.read<OptionController>().options.first.flash!) {
         scannerController!.toggleTorch();
@@ -388,9 +386,11 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
   }
 
   void updateZoomScale(double scale) {
+    final clampedScale = scale.clamp(1.0, 5.0); // Display range: 1.0 to 5.0
+    final zoomValue = (clampedScale - 1.0) / 4.0; // Map to 0.0 to 1.0
     setState(() {
-      currentZoomScale = scale.clamp(0.0, 1.0);
-      scannerController!.setZoomScale(currentZoomScale);
+      currentZoomScale = clampedScale;
+      scannerController!.setZoomScale(zoomValue);
       if (context.read<OptionController>().options.first.vibrate!) {
         Vibration.vibrate(duration: 20);
       }
@@ -442,7 +442,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
           IconButton(
             onPressed: () {
               setState(() {
-                showZoomSlider = !showZoomSlider; // Toggle zoom slider visibility
+                showZoomSlider = !showZoomSlider;
               });
             },
             icon: Icon(
@@ -456,7 +456,6 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
         children: [
           GestureDetector(
             onScaleUpdate: (ScaleUpdateDetails details) {
-              // Handle pinch-to-zoom
               double newScale = currentZoomScale * details.scale;
               updateZoomScale(newScale);
             },
