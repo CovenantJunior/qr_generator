@@ -515,7 +515,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                     ),
                     Expanded(
                       child: Slider(
-                        value: currentZoomScale,
+                        value: currentZoomScale, 
                         min: 1.0,
                         max: 5.0,
                         divisions: 40,

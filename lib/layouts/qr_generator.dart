@@ -180,16 +180,13 @@ class _QRGeneratorState extends State<QRGenerator> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: widget.colors![1],
+                color: Colors.black26,
                 blurRadius: 8,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
-            border: Border.all(
-              width: .1
-            )
           ),
           child: Stack(
             children: [
@@ -250,18 +247,15 @@ class _QRGeneratorState extends State<QRGenerator> {
         width: 100,
         child: Container(
           decoration: BoxDecoration(
-            color: widget.colors![0],
+            color: selectedTyped == type ? Colors.grey[200] : widget.textColor,
             borderRadius: BorderRadius.circular(15),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
-                color: widget.colors![1],
+                color: Colors.black26,
                 blurRadius: 8,
-                offset: const Offset(0, 4),
+                offset: Offset(0, 4),
               ),
             ],
-            border: Border.all(
-              width: selectedTyped == type ? 1 : .1
-            )
           ),
           child: Center(
             child: Column(
@@ -270,7 +264,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                 Icon(
                   icon,
                   size: 30,
-                  color: widget.textColor
+                  color: widget.colors![1],
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -278,7 +272,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                   style: GoogleFonts.quicksand(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: widget.textColor,
+                    color: widget.colors![0],
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -399,7 +393,7 @@ class _QRGeneratorState extends State<QRGenerator> {
           "Share in Image Format",
           style: GoogleFonts.quicksand(
             fontWeight: FontWeight.bold,
-            color: widget.textColor,
+            color: widget.colors![1],
           ),
           textAlign: TextAlign.center,
         ),
@@ -727,7 +721,7 @@ class _QRGeneratorState extends State<QRGenerator> {
                           "Select QR Code Type",
                           style: GoogleFonts.quicksand(
                             fontWeight: FontWeight.bold,
-                            color: widget.textColor,
+                            color: widget.colors![1],
                             fontSize: 16,
                           ),
                           textAlign: TextAlign.center,
@@ -735,12 +729,12 @@ class _QRGeneratorState extends State<QRGenerator> {
                         const SizedBox(height: 10),
                         data.isNotEmpty
                             ? Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color: widget.colors![1],
+                                    color: Colors.black26,
                                     blurRadius: 8,
-                                    offset: const Offset(0, 4),
+                                    offset: Offset(0, 4),
                                   ),
                                 ],
                               ),
@@ -841,17 +835,16 @@ class _QRGeneratorState extends State<QRGenerator> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: showSaveFormatSelectionDialog,
-                      label: Text(
+                      label: const Text(
                         'Save Code',
                         style: TextStyle(
                           fontFamily: 'Quicksand',
-                          fontWeight: FontWeight.bold,
-                          color: widget.textColor,
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                       icon: Icon(
                         Icons.save_alt_rounded,
-                        color: widget.textColor,
+                        color: widget.colors![1],
                       ),
                     ),
                     const SizedBox(
@@ -859,17 +852,16 @@ class _QRGeneratorState extends State<QRGenerator> {
                     ),
                     ElevatedButton.icon(
                       onPressed: showShareFormatSelectionDialog,
-                      label: Text(
+                      label: const Text(
                         'Share Code',
                         style: TextStyle(
                           fontFamily: 'Quicksand',
-                          fontWeight: FontWeight.bold,
-                          color: widget.textColor,
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                       icon: Icon(
                         Icons.share,
-                        color: widget.textColor,
+                        color: widget.colors![1],
                       ),
                     ),
                 ],

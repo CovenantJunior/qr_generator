@@ -6,10 +6,10 @@ class Themes {
       'id': 1,
       'name': 'Royal',
       'color': [
-        const Color.fromARGB(255, 255, 255, 255),
-        const Color.fromARGB(255, 247, 242, 242),
+        const Color.fromARGB(255, 0, 0, 0),
+        const Color.fromARGB(255, 16, 16, 16),
       ],
-      'textColor': const Color.fromARGB(255, 0, 0, 0),
+      'textColor': const Color.fromARGB(255, 255, 255, 255),
     },
     {
       'id': 2,

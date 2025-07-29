@@ -115,7 +115,7 @@ class _OptionTileState extends State<OptionTile> {
             children: [
               Icon(
                 widget.icon,
-                color: !widget.enabled ? Colors.grey : widget.textColor,
+                color: !widget.enabled ? Colors.blueGrey : widget.textColor,
                 size: 20,
               ),
               const SizedBox(height: 10),
@@ -123,7 +123,7 @@ class _OptionTileState extends State<OptionTile> {
                 widget.title!,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.quicksand(
-                  color: !widget.enabled ? Colors.grey : widget.textColor,
+                  color: !widget.enabled ? Colors.blueGrey : widget.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 12
                 ),

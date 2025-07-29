@@ -63,16 +63,7 @@ class _HomeState extends State<Home> {
       body: SafeArea(
         child: Column(
           children: [
-            Center(
-              child: Text(
-                'QR Generator',
-                style: GoogleFonts.quicksand(
-                  color: widget.textColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 32
-                ),
-              ),
-            ),
+            const Center(),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 10.0),
               child: Column(
@@ -90,11 +81,14 @@ class _HomeState extends State<Home> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            // blurRadius: 5,
+                            blurRadius: 5,
                             spreadRadius: 5,
-                            color: widget.colors![1]
-                          )
-                        ]
+                            color: widget.colors![0]
+                          ),
+                        ],
+                        border: Border.all(
+                          width: .2
+                        )
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -108,7 +102,10 @@ class _HomeState extends State<Home> {
                           ),
             
                           const SizedBox(
-                            height: 40,
+                            width: 200,
+                            child: Divider(
+                              height: 40,
+                            ),
                           ),
             
                            _buttonBuilder(

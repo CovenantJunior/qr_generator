@@ -134,147 +134,144 @@ class _OptionsState extends State<Options> {
         leading: const SizedBox(),
         backgroundColor: widget.colors![0],
         centerTitle: true,
-        title: const Text(
-          "Settings",
-          style: TextStyle(
-            fontFamily: 'Quicksand',
-            fontWeight: FontWeight.bold
-          ),
-        ),
       ),
       body: 
-        Column(
-          children: [
-            const SizedBox(
-              height: 30,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OptionTile(
-                    id: 1,
-                    title: "Beep",
-                    icon: Icons.volume_up_outlined,
-                    enabled: beep!,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                  OptionTile(
-                    id: 2,
-                    title: "Vibrate",
-                    icon: Icons.vibration_outlined,
-                    enabled: vibrate!,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                  OptionTile(
-                    id: 3,
-                    title: "Clipboard",
-                    icon: Icons.copy,
-                    enabled: copyToClipboard!,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Stack(
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Center(
+            heightFactor: .8,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       OptionTile(
-                        id: 4,
-                        title: "Scan Mode\n'$optionName'",
-                        icon: Icons.speed_rounded,
+                        id: 1,
+                        title: "Beep",
+                        icon: Icons.volume_up_outlined,
+                        enabled: beep!,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      OptionTile(
+                        id: 2,
+                        title: "Vibrate",
+                        icon: Icons.vibration_outlined,
+                        enabled: vibrate!,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      OptionTile(
+                        id: 3,
+                        title: "Clipboard",
+                        icon: Icons.copy,
+                        enabled: copyToClipboard!,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Stack(
+                        children: [
+                          OptionTile(
+                            id: 4,
+                            title: "Scan Mode\n'$optionName'",
+                            icon: Icons.speed_rounded,
+                            enabled: true,
+                            colors: widget.colors,
+                            textColor: widget.textColor
+                          ),
+                          Positioned(
+                            right: 10,
+                            top: 10,
+                            child: GestureDetector(
+                              onTap: speedInfo,
+                              child: Icon(
+                                Icons.help_outline_rounded,
+                                color: widget.textColor,
+                                size: 20,
+                              ),
+                            ),
+                          )
+                        ]
+                      ),
+                      OptionTile(
+                        id: 5,
+                        title: "Camera\n'${facing.toString().split('.').last.toUpperCase()}'",
+                        icon: facing == CameraFacing.back ? Icons.flip_camera_ios_outlined : Icons.flip_camera_ios_rounded,
                         enabled: true,
                         colors: widget.colors,
                         textColor: widget.textColor
                       ),
-                      Positioned(
-                        right: 10,
-                        top: 10,
-                        child: GestureDetector(
-                          onTap: speedInfo,
-                          child: Icon(
-                            Icons.help_outline_rounded,
-                            color: widget.textColor,
-                            size: 20,
-                          ),
-                        ),
-                      )
-                    ]
-                  ),
-                  OptionTile(
-                    id: 5,
-                    title: "Camera\n'${facing.toString().split('.').last.toUpperCase()}'",
-                    icon: facing == CameraFacing.back ? Icons.flip_camera_ios_outlined : Icons.flip_camera_ios_rounded,
-                    enabled: true,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                  OptionTile(
-                    id: 6,
-                    title: "Flash",
-                    icon: flash! ? Icons.flash_on_rounded : Icons.flash_off_rounded,
-                    enabled: flash,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 50),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  OptionTile(
-                    id: 7,
-                    title: "QR Size\n'$qrSize px'",
-                    icon: Icons.qr_code_rounded,
-                    enabled: true,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                  OptionTile(
-                    id: 8,
-                    title: "Transparent",
-                    icon: Icons.water_drop_sharp,
-                    enabled: qrTransparent!,
-                    colors: widget.colors,
-                    textColor: widget.textColor
-                  ),
-                  Stack(
-                    children: [
                       OptionTile(
-                        id: 9,
-                        title: "Remove Ads",
-                        icon: Icons.movie_filter_outlined,
-                        enabled: false,
+                        id: 6,
+                        title: "Flash",
+                        icon: flash! ? Icons.flash_on_rounded : Icons.flash_off_rounded,
+                        enabled: flash,
                         colors: widget.colors,
                         textColor: widget.textColor
                       ),
-                      const Positioned(
-                        right: 0,
-                        child: Icon(
-                          Icons.workspace_premium_outlined,
-                          color: Colors.grey,
-                          size: 30,
-                        ),
-                      )
                     ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 30),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      OptionTile(
+                        id: 7,
+                        title: "QR Size\n'$qrSize px'",
+                        icon: Icons.qr_code_rounded,
+                        enabled: true,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      OptionTile(
+                        id: 8,
+                        title: "Transparent",
+                        icon: Icons.water_drop_sharp,
+                        enabled: qrTransparent!,
+                        colors: widget.colors,
+                        textColor: widget.textColor
+                      ),
+                      Stack(
+                        children: [
+                          OptionTile(
+                            id: 9,
+                            title: "Remove Ads",
+                            icon: Icons.movie_filter_outlined,
+                            enabled: false,
+                            colors: widget.colors,
+                            textColor: widget.textColor
+                          ),
+                          const Positioned(
+                            right: 0,
+                            child: Icon(
+                              Icons.workspace_premium_outlined,
+                              color: Colors.grey,
+                              size: 30,
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         )
     );
   }
