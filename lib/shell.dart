@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_exit_app/flutter_exit_app.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:provider/provider.dart';
@@ -8,10 +9,12 @@ import 'package:qr_generator/layouts/home.dart';
 import 'package:qr_generator/layouts/options.dart';
 class Shell extends StatelessWidget {
   final int index;
+  late bool exit;
 
-  const Shell({
+  Shell({
     super.key,
-    required this.index
+    required this.index,
+    this.exit = false,
   });
 
 
@@ -27,6 +30,29 @@ class Shell extends StatelessWidget {
     return PersistentTabView(
       context,
       controller: controller,
+      onWillPop: (p0) {
+          if (exit) {
+            FlutterExitApp.exitApp();
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                "Press back again to exit",
+                style: TextStyle(
+                  fontFamily: 'Quicksand',
+                  color: textColor
+                )
+              ),
+              backgroundColor: Colors.white,
+              duration: const Duration(seconds: 3)
+            ),
+          );
+          exit = true;
+          Future.delayed(const Duration(seconds: 3), (){
+            exit = false;
+          });
+          return Future.value(false);
+        },
       screens: [
         Home(colors: colors, textColor: textColor),
         Options(colors: colors, textColor: textColor),
