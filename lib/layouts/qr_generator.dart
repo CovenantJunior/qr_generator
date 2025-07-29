@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qr_generator/ads/interstitial.dart';
 import 'package:qr_generator/ads/rewarded.dart';
 import 'package:qr_generator/controllers/option_controller.dart';
 import 'package:screenshot/screenshot.dart';
@@ -166,6 +167,7 @@ class _QRGeneratorState extends State<QRGenerator> {
             }
           }
         } else {
+          await InterstitialAds().loadInterstitialAd(context);
           if (action == 'share') {
             shareQR(format);
           } else if (action == 'save') {

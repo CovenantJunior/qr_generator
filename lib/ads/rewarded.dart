@@ -9,9 +9,9 @@ class RewardedAds {
   /// TODO: replace this test ad unit with your own ad unit
   final String rewardedAdUnitId = Platform.isAndroid
       // Use this ad unit on Android...
-      ? 'ca-app-pub-3940256099942544/5224354917'
+      ? 'ca-app-pub-8379581354079241/3793994440'
       // ... or this one on iOS.
-      : 'ca-app-pub-3940256099942544/5224354917';
+      : 'ca-app-pub-8379581354079241/3793994440';
 
   /// Rewarded ad instance.
   RewardedAd? _rewardedAd;
