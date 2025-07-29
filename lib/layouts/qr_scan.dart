@@ -519,7 +519,7 @@ class _QRScanState extends State<QRScan> with TickerProviderStateMixin {
                         min: 1.0,
                         max: 5.0,
                         divisions: 40,
-                        activeColor: widget.colors![1],
+                        activeColor: widget.textColor,
                         inactiveColor: widget.textColor!.withOpacity(0.5),
                         onChanged: (value) {
                           updateZoomScale(value);
