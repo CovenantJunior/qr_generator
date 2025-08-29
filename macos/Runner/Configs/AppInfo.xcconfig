@@ -8,7 +8,7 @@
 PRODUCT_NAME = qr_generator
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.qrGenerator
+PRODUCT_BUNDLE_IDENTIFIER = com.teapotlab.qrGenerator
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 com.example. All rights reserved.
