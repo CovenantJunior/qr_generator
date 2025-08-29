@@ -504,7 +504,7 @@ class _QRGeneratorState extends State<QRGenerator> {
       }
 
       // Create Perzsi directory
-      final dir = Directory('${directory.path}/QR Code Generator');
+      final dir = Directory('${directory.path}/QR Generator & Barcode Scanner');
       if (!await dir.exists()) {
         await dir.create(recursive: true);
       }
